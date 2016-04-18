@@ -5,10 +5,7 @@
  */
 package formidesktop.panels;
 
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -62,8 +59,10 @@ public class RowList extends javax.swing.JPanel {
         jCheckBox1 = new javax.swing.JCheckBox();
         jCheckBox2 = new javax.swing.JCheckBox();
 
+        setBackground(java.awt.Color.white);
         setLayout(new java.awt.BorderLayout(12, 0));
 
+        jCheckBox1.setBackground(java.awt.Color.white);
         jCheckBox1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jCheckBox1.setPreferredSize(new java.awt.Dimension(132, 23));
         jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
@@ -72,6 +71,8 @@ public class RowList extends javax.swing.JPanel {
             }
         });
         add(jCheckBox1, java.awt.BorderLayout.WEST);
+
+        jCheckBox2.setBackground(java.awt.Color.white);
         add(jCheckBox2, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 

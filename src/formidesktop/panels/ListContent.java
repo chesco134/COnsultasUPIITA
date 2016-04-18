@@ -27,6 +27,7 @@ public class ListContent extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        setBackground(java.awt.Color.white);
         setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20));
         setLayout(new java.awt.GridLayout(1, 0, 0, 50));
     }// </editor-fold>//GEN-END:initComponents
