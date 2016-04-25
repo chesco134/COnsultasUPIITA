@@ -9,6 +9,8 @@ import formidesktop.database.DatabaseConnection;
 import formidesktop.panels.ListContent;
 import formidesktop.panels.RowList;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontFormatException;
@@ -50,6 +52,10 @@ public class MainFrame extends javax.swing.JFrame {
     
     private void postInitComponents(){
         setBackground(java.awt.Color.white);
+        Dimension d = new Dimension();
+        d.setSize(jPanel8.getWidth(), 0.01);
+        jPanel8.setSize(d);
+        jPanel8.setBackground(Color.black);
         ImageIcon icon = new ImageIcon("imgs/upiita_gris1.png");
         Image img = icon.getImage();
         icon.setImage(img.getScaledInstance(-1, jPanel5.getHeight() - 15, Image.SCALE_DEFAULT));
@@ -170,13 +176,10 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel6 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
         jPanel7 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jLabel1 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
+        jPanel8 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Consulta de demanda de unidades de aprendizaje");
@@ -184,7 +187,6 @@ public class MainFrame extends javax.swing.JFrame {
         setResizable(false);
 
         jPanel3.setBackground(java.awt.Color.white);
-        jPanel3.setBorder(null);
         jPanel3.setLayout(new java.awt.BorderLayout());
 
         jPanel5.setBackground(java.awt.Color.white);
@@ -210,41 +212,21 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel1.setPreferredSize(new java.awt.Dimension(240, 138));
         jPanel1.setLayout(new java.awt.BorderLayout());
 
-        jPanel2.setBackground(java.awt.Color.white);
-        jPanel2.setPreferredSize(new java.awt.Dimension(240, 186));
-        jPanel2.setLayout(new java.awt.GridLayout(3, 0, 0, 10));
+        jPanel7.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel7.setLayout(new java.awt.BorderLayout());
 
+        jLabel1.setBackground(new java.awt.Color(255, 255, 255));
         jLabel1.setFont(new java.awt.Font("Cantarell", 0, 24)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Número de boleta");
-        jLabel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 10, 1));
+        jLabel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 1, 10, 1));
         jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jPanel2.add(jLabel1);
+        jLabel1.setPreferredSize(new java.awt.Dimension(193, 55));
+        jPanel7.add(jLabel1, java.awt.BorderLayout.NORTH);
 
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
-        jLabel2.setToolTipText("");
-        jPanel2.add(jLabel2);
-
-        jPanel7.setBackground(java.awt.Color.white);
-
-        jTable1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null}
-            },
-            new String [] {
-                "Title 1"
-            }
-        ));
-        jScrollPane1.setViewportView(jTable1);
-
-        jPanel7.add(jScrollPane1);
-
-        jTextField1.setBackground(java.awt.Color.white);
         jTextField1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jTextField1.setBorder(null);
-        jTextField1.setMargin(new java.awt.Insets(10, 0, 10, 0));
-        jTextField1.setPreferredSize(new java.awt.Dimension(2, 38));
+        jTextField1.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 1, 1, 1));
+        jTextField1.setPreferredSize(new java.awt.Dimension(2, 28));
         jTextField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField1ActionPerformed(evt);
@@ -255,11 +237,12 @@ public class MainFrame extends javax.swing.JFrame {
                 jTextField1KeyPressed(evt);
             }
         });
-        jPanel7.add(jTextField1);
+        jPanel7.add(jTextField1, java.awt.BorderLayout.CENTER);
 
-        jPanel2.add(jPanel7);
+        jPanel8.setPreferredSize(new java.awt.Dimension(10, 1));
+        jPanel7.add(jPanel8, java.awt.BorderLayout.SOUTH);
 
-        jPanel1.add(jPanel2, java.awt.BorderLayout.CENTER);
+        jPanel1.add(jPanel7, java.awt.BorderLayout.PAGE_START);
 
         jPanel4.add(jPanel1, new java.awt.GridBagConstraints());
 
@@ -274,7 +257,7 @@ public class MainFrame extends javax.swing.JFrame {
             if (!"".equals(jTextField1.getText().trim())) {
                 listMaterias(jTextField1.getText().trim());
             } else {
-                jLabel2.setText("Necesitamos una boleta válida");
+                //jLabel2.setText("Necesitamos una boleta válida");
             }
         }
     }//GEN-LAST:event_jTextField1KeyPressed
@@ -285,16 +268,13 @@ public class MainFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JPanel jPanel8;
     private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }
