@@ -5,6 +5,7 @@
  */
 package formidesktop.panels;
 
+import formidesktop.database.acciones.AccionesTablaAlumnoCursaMateria;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -29,11 +30,13 @@ public class RowList extends javax.swing.JPanel {
         this.boleta = boleta;
         jCheckBox2.setText(materiaName);
         jCheckBox2.setFont(myFont.deriveFont(14f));
+        jCheckBox1.setEnabled(false);
         jCheckBox1.addMouseListener(new MouseAdapter(){
             
             @Override
             public void mouseClicked(MouseEvent evt){
                 System.out.println(jCheckBox1.isSelected() ? boleta + " dice que recursará " + jCheckBox2.getText() : boleta + " dice que ya no recursará " + jCheckBox2.getText());
+                AccionesTablaAlumnoCursaMateria.actualizaRecurse(boleta, materiaName, jCheckBox1.isSelected());
             }
         });
         jCheckBox2.addMouseListener(new MouseAdapter() {
@@ -41,11 +44,15 @@ public class RowList extends javax.swing.JPanel {
             @Override
             public void mouseClicked(MouseEvent evt){
                 System.out.println("Are we enabled? " + jCheckBox2.isSelected());
+                //`actualizaRecurse`(IN boleta varchar(10), IN unidadAprendizaje varchar(100), IN isRecurse int)
+                if(jCheckBox2.isSelected())
+                    AccionesTablaAlumnoCursaMateria.insertaAlumnoCursaUnidadDeAprendizaje(boleta, materiaName, jCheckBox1.isSelected());
+                else
+                    AccionesTablaAlumnoCursaMateria.eliminaAlumnoCursaUnidadDeAprendizaje(boleta, materiaName);
+                jCheckBox1.setEnabled(jCheckBox2.isSelected());
             }
         });
     }
-    
-    
 
     /**
      * This method is called from within the constructor to initialize the form.

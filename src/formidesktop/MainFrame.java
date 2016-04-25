@@ -49,13 +49,8 @@ public class MainFrame extends javax.swing.JFrame {
         //jPanel5.add(jlIcon2, BorderLayout.EAST);
         //jPanel6.add(instruccionesUpiita, BorderLayout.CENTER);
     }
-    
-    private void postInitComponents(){
-        setBackground(java.awt.Color.white);
-        Dimension d = new Dimension();
-        d.setSize(jPanel8.getWidth(), 0.01);
-        jPanel8.setSize(d);
-        jPanel8.setBackground(Color.black);
+
+    private void setUpHeaderPanel() {
         ImageIcon icon = new ImageIcon("imgs/upiita_gris1.png");
         Image img = icon.getImage();
         icon.setImage(img.getScaledInstance(-1, jPanel5.getHeight() - 15, Image.SCALE_DEFAULT));
@@ -63,17 +58,12 @@ public class MainFrame extends javax.swing.JFrame {
         ImageIcon icon2 = new ImageIcon("imgs/ipn_logo_blk.png");
         Image img2 = icon2.getImage();
         icon2.setImage(img2.getScaledInstance(-1, jPanel5.getHeight() - 15, Image.SCALE_DEFAULT));
-        JLabel jlIcon2 = new JLabel(icon2);
+        //JLabel jlIcon2 = new JLabel(icon2);
         JLabel encabezadoUpiita = new JLabel("Unidad Profesional Interdisciplinaria en Ingenierías y Tecnologías Avanzadas");
-        JTextArea instruccionesUpiita = new JTextArea("Consulta a la comunidad estudiantil sobre la demanda de unidades de aprendizaje para el próximo periodo escolar");
-        instruccionesUpiita.setEditable(false);
-        instruccionesUpiita.setLineWrap(true);
-        instruccionesUpiita.setWrapStyleWord(true);
         try {
             Font mFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/Roboto-Black.ttf"));
             encabezadoUpiita.setForeground(java.awt.Color.white);
             encabezadoUpiita.setFont(mFont.deriveFont(18f));
-            instruccionesUpiita.setFont(mFont.deriveFont(18f));
         } catch (FontFormatException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -84,24 +74,45 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel5.add(encabezadoUpiita, BorderLayout.CENTER);
     }
 
+    private void postInitComponents() {
+        setBackground(java.awt.Color.white);
+        Dimension d = new Dimension();
+        d.setSize(jPanel8.getWidth(), 0.01);
+        jPanel8.setSize(d);
+        jPanel8.setBackground(Color.black);
+        setUpHeaderPanel();
+        JTextArea instruccionesUpiita = new JTextArea("Consulta a la comunidad estudiantil sobre la demanda de unidades de aprendizaje para el próximo periodo escolar");
+        instruccionesUpiita.setEditable(false);
+        instruccionesUpiita.setLineWrap(true);
+        instruccionesUpiita.setWrapStyleWord(true);
+        try {
+            Font mFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/Roboto-Black.ttf"));
+            instruccionesUpiita.setFont(mFont.deriveFont(18f));
+        } catch (FontFormatException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     public void listMaterias(String boleta) {
         remove(jPanel4);
         remove(jPanel3);
         ListContent lContent = new ListContent();
         DatabaseConnection con = new DatabaseConnection();
         try {
-            PreparedStatement pstmnt = 
-                    con.getConnection()
-                            .prepareStatement("select * from "
-                    + "Alumno join Programa_Academico_Unidad_Aprendizaje "
-                    + "using(idPrograma_Academico) where boleta like ?");
+            PreparedStatement pstmnt
+                    = con.getConnection()
+                    .prepareStatement("select * from "
+                            + "Alumno join Programa_Academico_Unidad_Aprendizaje "
+                            + "using(idPrograma_Academico) where boleta like ?");
             pstmnt.setString(1, boleta);
             ResultSet rs = pstmnt.executeQuery();
             List<String> materias = new ArrayList<>();
             while (rs.next()) {
                 materias.add(rs.getString("idUnidad_Aprendizaje"));
             }
-            lContent.setLayout(new GridLayout(materias.size()+1, 1));
+            lContent.setLayout(new GridLayout(materias.size() + 1, 1));
             Font myFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/Roboto-Regular.ttf"));
             JLabel headingRecurseDeMateria = new JLabel("Pienso recursarla");
             headingRecurseDeMateria.setFont(myFont.deriveFont(14f).deriveFont(Font.BOLD));
@@ -112,21 +123,32 @@ public class MainFrame extends javax.swing.JFrame {
             headingPanel.add(headingUnidadDeAprendizaje);
             headingPanel.setBorder(BorderFactory.createEmptyBorder(2, 0, 12, 0));
             headingPanel.setBackground(java.awt.Color.white);
-            System.out.println("Totolte " + headingRecurseDeMateria.getWidth());
             lContent.add(headingPanel);
             materias.stream().forEach((cardName) -> {
                 RowList row = new RowList(boleta, cardName, myFont.deriveFont(14f), headingRecurseDeMateria.getWidth());
                 lContent.add(row);
             });
             JPanel listPanel = new JPanel(new BorderLayout());
-            listPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+            listPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
             JLabel encabezado = new JLabel("Unidad Profesional Interdisciplinaria en "
                     + "Ingenierías y Tecnologías Avanzadas");
-            System.out.println("MyFont family: " + myFont.getFamily() +
-                    ", with a size of: " + myFont.deriveFont(18f).getSize());
+            System.out.println("MyFont family: " + myFont.getFamily()
+                    + ", with a size of: " + myFont.deriveFont(18f).getSize());
             encabezado.setFont(myFont.deriveFont(20f));
             encabezado.setBorder(BorderFactory.createEmptyBorder(5, 10, 2, 10));
             encabezado.setHorizontalAlignment(JLabel.CENTER);
+            encabezado.setForeground(java.awt.Color.white);
+            JPanel headerContainer = new JPanel();
+            ImageIcon icon = new ImageIcon("imgs/upiita_gris1.png");
+            Image img = icon.getImage();
+            icon.setImage(img.getScaledInstance(-1, jPanel5.getHeight() - 15,
+                    Image.SCALE_DEFAULT));
+            JLabel jlIcon = new JLabel(icon);
+            headerContainer.setBackground(java.awt.Color.decode("#850060"));
+            headerContainer.add(jlIcon, BorderLayout.WEST);
+            headerContainer.add(encabezado, BorderLayout.CENTER);
+            listPanel.add(headerContainer, BorderLayout.NORTH);
+            listPanel.add(lContent, BorderLayout.WEST);
             JButton aceptar = new JButton("Terminar");
             aceptar.setFont(myFont.deriveFont(14f));
             JPanel panelDeBotonAceptar = new JPanel();
@@ -134,8 +156,6 @@ public class MainFrame extends javax.swing.JFrame {
             panelDeBotonAceptar.setBorder(BorderFactory.createEmptyBorder(15, 10, 10, 10));
             panelDeBotonAceptar.add(aceptar);
             panelDeBotonAceptar.setBackground(java.awt.Color.white);
-            listPanel.add(encabezado, BorderLayout.NORTH);
-            listPanel.add(lContent, BorderLayout.WEST);
             listPanel.add(panelDeBotonAceptar, BorderLayout.EAST);
             listPanel.setBackground(java.awt.Color.white);
             JScrollPane sPane = new JScrollPane(listPanel);
@@ -148,7 +168,7 @@ public class MainFrame extends javax.swing.JFrame {
             aceptar.addActionListener((ActionEvent evt) -> {
                 MainFrame.this.remove(sPane);
                 MainFrame.this.initComponents();
-                postInitComponents();
+                MainFrame.this.postInitComponents();
                 repaint();
                 revalidate();
             });
