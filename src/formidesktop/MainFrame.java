@@ -19,6 +19,7 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -51,18 +52,20 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     private void setUpHeaderPanel() {
-        ImageIcon icon = new ImageIcon("imgs/upiita_gris1.png");
+        URL url = RowList.class.getResource("upiita_gris1.png");
+        ImageIcon icon = new ImageIcon(url);
         Image img = icon.getImage();
         icon.setImage(img.getScaledInstance(-1, jPanel5.getHeight() - 15, Image.SCALE_DEFAULT));
         JLabel jlIcon = new JLabel(icon);
-        ImageIcon icon2 = new ImageIcon("imgs/ipn_logo_blk.png");
+        url = RowList.class.getResource("ipn_logo_blk.png");
+        ImageIcon icon2 = new ImageIcon(url);
         Image img2 = icon2.getImage();
         icon2.setImage(img2.getScaledInstance(-1, jPanel5.getHeight() - 15, Image.SCALE_DEFAULT));
         // La siguiente línea de código es para colocar el logo de upiita al final del encabezado        
         //JLabel jlIcon2 = new JLabel(icon2);
         JLabel encabezadoUpiita = new JLabel("Unidad Profesional Interdisciplinaria en Ingenierías y Tecnologías Avanzadas");
         try {
-            Font mFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/Roboto-Black.ttf"));
+            Font mFont = Font.createFont(Font.TRUETYPE_FONT, RowList.class.getResourceAsStream("Roboto-Black.ttf"));
             encabezadoUpiita.setForeground(java.awt.Color.white);
             encabezadoUpiita.setFont(mFont.deriveFont(18f));
         } catch (FontFormatException ex) {
@@ -89,7 +92,7 @@ public class MainFrame extends javax.swing.JFrame {
         instruccionesUpiita.setLineWrap(true);
         instruccionesUpiita.setWrapStyleWord(true);
         try {
-            Font mFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/Roboto-Black.ttf"));
+            Font mFont = Font.createFont(Font.TRUETYPE_FONT, RowList.class.getResourceAsStream("Roboto-Black.ttf"));
             instruccionesUpiita.setFont(mFont.deriveFont(18f));
         } catch (FontFormatException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
