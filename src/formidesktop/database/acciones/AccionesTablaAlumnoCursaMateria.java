@@ -17,7 +17,10 @@ import java.sql.SQLException;
  * @author jcapiz
  */
 public class AccionesTablaAlumnoCursaMateria {
-    
+    public static final String BIO = "INGENIERIA BIÓNICA";
+    public static final String MEC = "INGENIERIA MECATRÓNICA";
+    public static final String TEL = "INGENIERIA TELEMÁTICA";
+    public static final String ISISA = "ISISIA";
     
     public static void actualizaRecurse(String boleta, String ua, boolean esRecurse){
         DatabaseConnection db = new DatabaseConnection();
@@ -105,4 +108,42 @@ public class AccionesTablaAlumnoCursaMateria {
         }
         return cursaUA;
     }
+    
+    public static boolean existeBoleta(String boleta){
+        boolean existeBoleta = false;
+        try{
+            DatabaseConnection db = new DatabaseConnection();
+            Connection con = db.getConnection();
+            PreparedStatement pstmnt = con.prepareStatement("select count(*)"
+                    + " from Alumno where boleta like ?");
+            pstmnt.setString(1, boleta);
+            ResultSet rs = pstmnt.executeQuery();
+            if(rs.next())
+                existeBoleta = rs.getInt(1) != 0;
+            db.closeConnection();
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return existeBoleta;
+    }
+    
+    public static String carrera (String boleta){
+        String carrera = null;
+        try{
+            DatabaseConnection db = new DatabaseConnection();
+            Connection con = db.getConnection();
+            PreparedStatement pstmt = con.prepareStatement("select idPrograma_Academico from Alumno where boleta like ?");
+            pstmt.setString(1, boleta);
+            ResultSet rs = pstmt.executeQuery();
+            if(rs.next()){
+                carrera = rs.getString(1);
+            }
+            db.closeConnection();
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+        return carrera;
+    }
+    
+    
 }

@@ -6,6 +6,8 @@
 package formidesktop;
 
 import formidesktop.database.DatabaseConnection;
+import formidesktop.database.acciones.AccionesTablaAlumnoCursaMateria;
+import formidesktop.panels.Cargando;
 import formidesktop.panels.ListContent;
 import formidesktop.panels.RowList;
 import java.awt.BorderLayout;
@@ -30,7 +32,9 @@ import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -44,20 +48,20 @@ public class MainFrame extends javax.swing.JFrame {
     /**
      * Creates new form MainFrame
      */
-    
     private String host;
-    
+
     public MainFrame() {
         initComponents();
         postInitComponents();
+        setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         //jPanel5.add(jlIcon2, BorderLayout.EAST);
         //jPanel6.add(instruccionesUpiita, BorderLayout.CENTER);
     }
 
-    public void setHost(String host){
+    public void setHost(String host) {
         this.host = host;
     }
-    
+
     private void setUpHeaderPanel() {
         URL url = RowList.class.getResource("upiita_gris1.png");
         ImageIcon icon = new ImageIcon(url);
@@ -80,7 +84,7 @@ public class MainFrame extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
-        jPanel5.setBackground(java.awt.Color.decode("#850060"));
+        jPanel5.setBackground(new java.awt.Color(134, 36, 31));
         jPanel5.add(jlIcon, BorderLayout.WEST);
         jPanel5.add(encabezadoUpiita, BorderLayout.CENTER);
     }
@@ -113,10 +117,11 @@ public class MainFrame extends javax.swing.JFrame {
         remove(jPanel3);
         ListContent lContent = new ListContent();
         DatabaseConnection con;
-        if(host != null)
+        if (host != null) {
             con = new DatabaseConnection(host);
-        else
+        } else {
             con = new DatabaseConnection();
+        }
         try {
             PreparedStatement pstmnt
                     = con.getConnection()
@@ -156,22 +161,30 @@ public class MainFrame extends javax.swing.JFrame {
             encabezado.setHorizontalAlignment(JLabel.CENTER);
             encabezado.setForeground(java.awt.Color.white);
             JPanel headerContainer = new JPanel();
-            ImageIcon icon = new ImageIcon("imgs/upiita_gris1.png");
+            URL url = RowList.class.getResource("upiita_gris1.png");
+            ImageIcon icon = new ImageIcon(url);
             Image img = icon.getImage();
             icon.setImage(img.getScaledInstance(-1, jPanel5.getHeight() - 15,
                     Image.SCALE_DEFAULT));
             JLabel jlIcon = new JLabel(icon);
-            headerContainer.setBackground(java.awt.Color.decode("#850060"));
+            headerContainer.setBackground(new java.awt.Color(134, 36, 31));
             headerContainer.add(jlIcon, BorderLayout.WEST);
             headerContainer.add(encabezado, BorderLayout.CENTER);
             listPanel.add(headerContainer, BorderLayout.NORTH);
             listPanel.add(lContent, BorderLayout.WEST);
             JButton aceptar = new JButton("Terminar");
+            JButton verMapa = new JButton("Ver mapa curricular");
             aceptar.setFont(myFont.deriveFont(14f));
+            verMapa.setFont(myFont.deriveFont(14f));
             JPanel panelDeBotonAceptar = new JPanel();
-            panelDeBotonAceptar.setLayout(new FlowLayout());
+            panelDeBotonAceptar.setLayout(new GridLayout(1, 2));
             panelDeBotonAceptar.setBorder(BorderFactory.createEmptyBorder(15, 10, 10, 10));
+            aceptar.setSize(100, 30);
+            verMapa.setSize(100, 30);
             panelDeBotonAceptar.add(aceptar);
+            if (!AccionesTablaAlumnoCursaMateria.carrera(boleta).equals(AccionesTablaAlumnoCursaMateria.ISISA)) {
+                panelDeBotonAceptar.add(verMapa);
+            }
             panelDeBotonAceptar.setBackground(java.awt.Color.white);
             listPanel.add(panelDeBotonAceptar, BorderLayout.EAST);
             listPanel.setBackground(java.awt.Color.white);
@@ -188,6 +201,10 @@ public class MainFrame extends javax.swing.JFrame {
                 MainFrame.this.postInitComponents();
                 repaint();
                 revalidate();
+            });
+            verMapa.addActionListener((ActionEvent e) -> {
+                Trayectoria mapa = new Trayectoria(AccionesTablaAlumnoCursaMateria.carrera(host));
+                mapa.iniciar();
             });
         } catch (SQLException e) {
             e.printStackTrace();
@@ -218,7 +235,7 @@ public class MainFrame extends javax.swing.JFrame {
         jTextField1 = new javax.swing.JTextField();
         jPanel8 = new javax.swing.JPanel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Consulta de demanda de unidades de aprendizaje");
         setPreferredSize(new java.awt.Dimension(780, 600));
         setResizable(false);
@@ -290,10 +307,20 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void jTextField1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyPressed
         // TODO add your handling code here:
+        String boleta = jTextField1.getText().trim();
         if (evt.getKeyChar() == '\n') {
-            if (!"".equals(jTextField1.getText().trim())) {
-                listMaterias(jTextField1.getText().trim());
+            if (!"".equals(boleta) && AccionesTablaAlumnoCursaMateria.existeBoleta(boleta)) {
+                listMaterias(boleta);
             } else {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "BAIA BAIA... tu boleta al parecer está mal escrita...\n(o quizás ni estás inscrito)",
+                        "KOMO LO ZUPO",
+                        JOptionPane.WARNING_MESSAGE,
+                        new javax.swing.ImageIcon(getClass().getResource("ahorano.png"))
+                );
+                jTextField1.setText(null);
                 //jLabel2.setText("Necesitamos una boleta válida");
             }
         }
@@ -314,4 +341,14 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel8;
     private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
+    Cargando loading = new Cargando(this);
+    
+    class Loading implements Runnable {
+
+        @Override
+        public void run() {
+            loading.setLoadingPanel();
+        }
+
+    }
 }
