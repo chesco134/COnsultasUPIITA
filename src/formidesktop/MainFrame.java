@@ -6,6 +6,8 @@
 package formidesktop;
 
 import formidesktop.database.DatabaseConnection;
+import formidesktop.database.acciones.AccionesTablaAlumnoCursaMateria;
+import formidesktop.panels.Cargando;
 import formidesktop.panels.ListContent;
 import formidesktop.panels.RowList;
 import java.awt.BorderLayout;
@@ -17,23 +19,28 @@ import java.awt.FontFormatException;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
-import java.io.File;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  *
@@ -44,20 +51,27 @@ public class MainFrame extends javax.swing.JFrame {
     /**
      * Creates new form MainFrame
      */
-    
     private String host;
-    
+    private Timer t;
+    private JLabel contadorLabel;
+    private JPanel innerGridBotones;
+    private static boolean isFirstTime = true;
+
     public MainFrame() {
+        if (isFirstTime) {
+            setUndecorated(true);
+            isFirstTime = false;
+        }
         initComponents();
         postInitComponents();
         //jPanel5.add(jlIcon2, BorderLayout.EAST);
         //jPanel6.add(instruccionesUpiita, BorderLayout.CENTER);
     }
 
-    public void setHost(String host){
+    public void setHost(String host) {
         this.host = host;
     }
-    
+
     private void setUpHeaderPanel() {
         URL url = RowList.class.getResource("upiita_gris1.png");
         ImageIcon icon = new ImageIcon(url);
@@ -69,7 +83,7 @@ public class MainFrame extends javax.swing.JFrame {
         Image img2 = icon2.getImage();
         icon2.setImage(img2.getScaledInstance(-1, jPanel5.getHeight() - 15, Image.SCALE_DEFAULT));
         // La siguiente línea de código es para colocar el logo de upiita al final del encabezado        
-        //JLabel jlIcon2 = new JLabel(icon2);
+        JLabel jlIcon2 = new JLabel(icon2);
         JLabel encabezadoUpiita = new JLabel("Unidad Profesional Interdisciplinaria en Ingenierías y Tecnologías Avanzadas");
         try {
             Font mFont = Font.createFont(Font.TRUETYPE_FONT, RowList.class.getResourceAsStream("Roboto-Black.ttf"));
@@ -80,9 +94,10 @@ public class MainFrame extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
-        jPanel5.setBackground(java.awt.Color.decode("#850060"));
+        jPanel5.setBackground(new java.awt.Color(134, 36, 31));
         jPanel5.add(jlIcon, BorderLayout.WEST);
         jPanel5.add(encabezadoUpiita, BorderLayout.CENTER);
+        jPanel5.add(jlIcon2, BorderLayout.EAST);
     }
 
     private void postInitComponents() {
@@ -106,6 +121,7 @@ public class MainFrame extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
+        setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
     }
 
     public void listMaterias(String boleta) {
@@ -113,10 +129,11 @@ public class MainFrame extends javax.swing.JFrame {
         remove(jPanel3);
         ListContent lContent = new ListContent();
         DatabaseConnection con;
-        if(host != null)
+        if (host != null) {
             con = new DatabaseConnection(host);
-        else
+        } else {
             con = new DatabaseConnection();
+        }
         try {
             PreparedStatement pstmnt
                     = con.getConnection()
@@ -130,7 +147,7 @@ public class MainFrame extends javax.swing.JFrame {
                 materias.add(rs.getString("idUnidad_Aprendizaje"));
             }
             lContent.setLayout(new GridLayout(materias.size() + 1, 1));
-            Font myFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/Roboto-Regular.ttf"));
+            Font myFont = Font.createFont(Font.TRUETYPE_FONT, RowList.class.getResourceAsStream("Roboto-Regular.ttf"));
             JLabel headingRecurseDeMateria = new JLabel("Pienso recursarla");
             headingRecurseDeMateria.setFont(myFont.deriveFont(14f).deriveFont(Font.BOLD));
             JLabel headingUnidadDeAprendizaje = new JLabel("Unidad de Aprendizaje");
@@ -156,29 +173,57 @@ public class MainFrame extends javax.swing.JFrame {
             encabezado.setHorizontalAlignment(JLabel.CENTER);
             encabezado.setForeground(java.awt.Color.white);
             JPanel headerContainer = new JPanel();
-            ImageIcon icon = new ImageIcon("imgs/upiita_gris1.png");
+            URL url = RowList.class.getResource("upiita_gris1.png");
+            ImageIcon icon = new ImageIcon(url);
             Image img = icon.getImage();
             icon.setImage(img.getScaledInstance(-1, jPanel5.getHeight() - 15,
                     Image.SCALE_DEFAULT));
             JLabel jlIcon = new JLabel(icon);
-            headerContainer.setBackground(java.awt.Color.decode("#850060"));
+            headerContainer.setBackground(new java.awt.Color(134, 36, 31));
             headerContainer.add(jlIcon, BorderLayout.WEST);
             headerContainer.add(encabezado, BorderLayout.CENTER);
             listPanel.add(headerContainer, BorderLayout.NORTH);
             listPanel.add(lContent, BorderLayout.WEST);
             JButton aceptar = new JButton("Terminar");
+            JButton verMapa = new JButton("Trayectoria recomendada");
             aceptar.setFont(myFont.deriveFont(14f));
+            verMapa.setFont(myFont.deriveFont(14f));
             JPanel panelDeBotonAceptar = new JPanel();
-            panelDeBotonAceptar.setLayout(new FlowLayout());
+            panelDeBotonAceptar.setLayout(new GridLayout(1, 2));
             panelDeBotonAceptar.setBorder(BorderFactory.createEmptyBorder(15, 10, 10, 10));
+            aceptar.setSize(100, 30);
+            verMapa.setSize(100, 30);
             panelDeBotonAceptar.add(aceptar);
+            if (!AccionesTablaAlumnoCursaMateria.carrera(boleta).equals(AccionesTablaAlumnoCursaMateria.ISISA)) {
+                panelDeBotonAceptar.add(verMapa);
+            }
             panelDeBotonAceptar.setBackground(java.awt.Color.white);
-            listPanel.add(panelDeBotonAceptar, BorderLayout.EAST);
+            JPanel parDeBotones = new JPanel(new BorderLayout(5, 0));
+            parDeBotones.setBackground(Color.white);
+            innerGridBotones = new JPanel(new GridLayout(3, 1, 0, 2));
+            innerGridBotones.setBackground(Color.white);
+            innerGridBotones.add(panelDeBotonAceptar);
+            JLabel nombreDelFulano = new JLabel("Holi " + AccionesTablaAlumnoCursaMateria.obtenerNombre(boleta) + " tienes:");
+            nombreDelFulano.setFont(myFont.deriveFont(14f));
+            nombreDelFulano.setHorizontalAlignment(JLabel.CENTER);
+            innerGridBotones.add(nombreDelFulano);
+            contadorLabel = new JLabel();
+            contadorLabel.setFont(myFont.deriveFont(14f).deriveFont(Font.BOLD));
+            contadorLabel.setHorizontalAlignment(JLabel.CENTER);
+            innerGridBotones.add(contadorLabel);
+            parDeBotones.add(innerGridBotones, BorderLayout.NORTH);
+            listPanel.add(parDeBotones, BorderLayout.EAST);
             listPanel.setBackground(java.awt.Color.white);
             JScrollPane sPane = new JScrollPane(listPanel);
             sPane.setBackground(java.awt.Color.white);
             sPane.getVerticalScrollBar().setUnitIncrement(64);
             setLayout(new BorderLayout(10, 7));
+            synchronized (this) {
+                try {
+                    wait(3000);
+                } catch (InterruptedException ignore) {
+                }
+            }
             add(sPane, BorderLayout.CENTER);
             repaint();
             revalidate();
@@ -188,6 +233,11 @@ public class MainFrame extends javax.swing.JFrame {
                 MainFrame.this.postInitComponents();
                 repaint();
                 revalidate();
+                JOptionPane.showMessageDialog(null, "¡Felicidades! :D");
+            });
+            verMapa.addActionListener((ActionEvent e) -> {
+                Trayectoria mapa = new Trayectoria(AccionesTablaAlumnoCursaMateria.carrera(boleta));
+                mapa.iniciar();
             });
         } catch (SQLException e) {
             e.printStackTrace();
@@ -196,7 +246,54 @@ public class MainFrame extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
+        loading.removeLoadingPanel();
         con.closeConnection();
+        javax.swing.Timer timer = new javax.swing.Timer(1000, new Contadorcito(15000));
+        timer.setRepeats(true);
+        timer.start();
+    }
+
+    private class Contadorcito implements ActionListener {
+
+        private long remainingTime;
+        private int tul = 1;
+        boolean mIsFirstTime = true;
+
+        public Contadorcito(long remainingTime) {
+            this.remainingTime = remainingTime;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent evt) {
+            if (remainingTime > 0) {
+                contadorLabel.setText(formatoStringTiempo(remainingTime));
+                if (remainingTime <= 10000 && mIsFirstTime) {
+                    Cargando c = new Cargando(MainFrame.this);
+                    c.bakeAzucarGlassPanel();
+                    new java.util.Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            c.removeLoadingPanel();
+                        }
+                    }, 4500);
+                    mIsFirstTime = false;
+                }
+                System.out.println("Iteration " + tul++);
+                remainingTime -= 1000;
+            } else {
+                contadorLabel.setText("Naaaa tú sigue con calma");
+                ((javax.swing.Timer) (evt.getSource())).stop();
+            }
+        }
+    }
+
+    private String formatoStringTiempo(long time) {
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(time);
+        int mins = c.get(Calendar.MINUTE);
+        int secs = c.get(Calendar.SECOND);
+        return (mins < 10 ? "0".concat(String.valueOf(mins)) : mins + "")
+                + ":" + (secs < 10 ? "0".concat(String.valueOf(secs)) : secs + "");
     }
 
     /**
@@ -218,7 +315,7 @@ public class MainFrame extends javax.swing.JFrame {
         jTextField1 = new javax.swing.JTextField();
         jPanel8 = new javax.swing.JPanel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Consulta de demanda de unidades de aprendizaje");
         setPreferredSize(new java.awt.Dimension(780, 600));
         setResizable(false);
@@ -290,11 +387,12 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void jTextField1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyPressed
         // TODO add your handling code here:
+        String boleta = jTextField1.getText().trim();
         if (evt.getKeyChar() == '\n') {
-            if (!"".equals(jTextField1.getText().trim())) {
-                listMaterias(jTextField1.getText().trim());
+            if ("Formi666".equals(boleta)) {
+                System.exit(0);
             } else {
-                //jLabel2.setText("Necesitamos una boleta válida");
+                botonClicked(boleta);
             }
         }
     }//GEN-LAST:event_jTextField1KeyPressed
@@ -314,4 +412,44 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel8;
     private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
+    Cargando loading = new Cargando(this);
+
+    private void botonClicked(String boleta) {
+        TryingBoleta t = new TryingBoleta();
+        t.boleta = boleta;
+        (new Thread(t)).start();
+    }
+
+    class TryingBoleta implements Runnable {
+
+        private String boleta;
+
+        @Override
+        public void run() {
+            (new Thread(new Loading())).start();
+            if (!"".equals(this.boleta) && AccionesTablaAlumnoCursaMateria.existeBoleta(boleta)) {
+                listMaterias(boleta);
+            } else {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "BAIA BAIA... tu boleta al parecer está mal escrita...\n(o quizás ni estás inscrito)",
+                        "KOMO LO ZUPO",
+                        JOptionPane.WARNING_MESSAGE,
+                        new javax.swing.ImageIcon(getClass().getResource("ahorano.png"))
+                );
+                jTextField1.setText(null);
+                loading.removeLoadingPanel();
+                //jLabel2.setText("Necesitamos una boleta válida");
+            }
+        }
+    }
+
+    class Loading implements Runnable {
+
+        @Override
+        public void run() {
+            loading.setLoadingPanel();
+        }
+
+    }
 }

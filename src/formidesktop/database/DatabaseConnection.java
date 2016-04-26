@@ -23,7 +23,7 @@ public class DatabaseConnection {
 	}
 
 	public DatabaseConnection() {
-		url = "jdbc:mysql://192.168.0.120/Demanda_Unidades_Aprendizaje?useUnicode=true&characterEncoding=utf-8";
+		url = "jdbc:mysql://192.168.0.124/Demanda_Unidades_Aprendizaje?useUnicode=true&characterEncoding=utf-8";
 		this.user = "amstrong";
 		this.password = "!\"#$%wszae123QWERT";
 		connection = null;
