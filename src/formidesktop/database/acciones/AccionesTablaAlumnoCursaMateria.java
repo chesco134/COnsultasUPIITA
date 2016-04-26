@@ -8,6 +8,8 @@ package formidesktop.database.acciones;
 import formidesktop.database.DatabaseConnection;
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -61,5 +63,46 @@ public class AccionesTablaAlumnoCursaMateria {
         }catch(SQLException e){
             e.printStackTrace();
         }
+    }
+    
+    public static boolean esRecurse(String boleta, String ua){
+        boolean esRecurse = false;
+        DatabaseConnection db = new DatabaseConnection();
+        try{
+            Connection con = db.getConnection();
+            PreparedStatement pstmnt = con.prepareStatement("select isRecurse "
+                    + "from Alumno_Cursa_Unidad_Aprendizaje where boleta "
+                    + "like ? and idUnidad_Aprendizaje like ?");
+            pstmnt.setString(1, boleta);
+            pstmnt.setString(2, ua);
+            ResultSet rs = pstmnt.executeQuery();
+            while(rs.next()){
+                esRecurse = rs.getInt(1) != 0;
+            }
+            db.closeConnection();
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return esRecurse;
+    }
+    
+    public static boolean cursaUnidadAprendizaje(String boleta, String ua){
+        boolean cursaUA = false;
+        DatabaseConnection db = new DatabaseConnection();
+        try{
+            Connection con = db.getConnection();
+            PreparedStatement pstmnt = con.prepareStatement("select count(*) "
+                    + "from Alumno_Cursa_Unidad_Aprendizaje where boleta like "
+                    + "? and idUnidad_Aprendizaje like ?");
+            pstmnt.setString(1, boleta);
+            pstmnt.setString(2, ua);
+            ResultSet rs = pstmnt.executeQuery();
+            if(rs.next())
+                cursaUA = rs.getInt(1) != 0;
+            db.closeConnection();
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return cursaUA;
     }
 }

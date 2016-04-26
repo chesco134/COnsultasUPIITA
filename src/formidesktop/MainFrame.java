@@ -58,6 +58,7 @@ public class MainFrame extends javax.swing.JFrame {
         ImageIcon icon2 = new ImageIcon("imgs/ipn_logo_blk.png");
         Image img2 = icon2.getImage();
         icon2.setImage(img2.getScaledInstance(-1, jPanel5.getHeight() - 15, Image.SCALE_DEFAULT));
+        // La siguiente línea de código es para colocar el logo de upiita al final del encabezado        
         //JLabel jlIcon2 = new JLabel(icon2);
         JLabel encabezadoUpiita = new JLabel("Unidad Profesional Interdisciplinaria en Ingenierías y Tecnologías Avanzadas");
         try {
@@ -81,6 +82,8 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel8.setSize(d);
         jPanel8.setBackground(Color.black);
         setUpHeaderPanel();
+        // El siguiente código es para colocar un mensaje justo debajo del 
+        // encabezado del panel principal.
         JTextArea instruccionesUpiita = new JTextArea("Consulta a la comunidad estudiantil sobre la demanda de unidades de aprendizaje para el próximo periodo escolar");
         instruccionesUpiita.setEditable(false);
         instruccionesUpiita.setLineWrap(true);
@@ -134,7 +137,7 @@ public class MainFrame extends javax.swing.JFrame {
                     + "Ingenierías y Tecnologías Avanzadas");
             System.out.println("MyFont family: " + myFont.getFamily()
                     + ", with a size of: " + myFont.deriveFont(18f).getSize());
-            encabezado.setFont(myFont.deriveFont(20f));
+            encabezado.setFont(myFont.deriveFont(18f));
             encabezado.setBorder(BorderFactory.createEmptyBorder(5, 10, 2, 10));
             encabezado.setHorizontalAlignment(JLabel.CENTER);
             encabezado.setForeground(java.awt.Color.white);
