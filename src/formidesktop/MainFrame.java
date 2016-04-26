@@ -44,6 +44,9 @@ public class MainFrame extends javax.swing.JFrame {
     /**
      * Creates new form MainFrame
      */
+    
+    private String host;
+    
     public MainFrame() {
         initComponents();
         postInitComponents();
@@ -51,6 +54,10 @@ public class MainFrame extends javax.swing.JFrame {
         //jPanel6.add(instruccionesUpiita, BorderLayout.CENTER);
     }
 
+    public void setHost(String host){
+        this.host = host;
+    }
+    
     private void setUpHeaderPanel() {
         URL url = RowList.class.getResource("upiita_gris1.png");
         ImageIcon icon = new ImageIcon(url);
@@ -105,7 +112,11 @@ public class MainFrame extends javax.swing.JFrame {
         remove(jPanel4);
         remove(jPanel3);
         ListContent lContent = new ListContent();
-        DatabaseConnection con = new DatabaseConnection();
+        DatabaseConnection con;
+        if(host != null)
+            con = new DatabaseConnection(host);
+        else
+            con = new DatabaseConnection();
         try {
             PreparedStatement pstmnt
                     = con.getConnection()

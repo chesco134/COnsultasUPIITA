@@ -23,9 +23,16 @@ public class DatabaseConnection {
 	}
 
 	public DatabaseConnection() {
-		url = "jdbc:mysql://192.168.0.109/Demanda_Unidades_Aprendizaje?useUnicode=true&characterEncoding=utf-8";
-		this.user = "jirachi";
-		this.password = "sharPedo319";
+		url = "jdbc:mysql://192.168.0.120/Demanda_Unidades_Aprendizaje?useUnicode=true&characterEncoding=utf-8";
+		this.user = "amstrong";
+		this.password = "!\"#$%wszae123QWERT";
+		connection = null;
+	}
+
+	public DatabaseConnection(String host) {
+		url = "jdbc:mysql://"+host+"/Demanda_Unidades_Aprendizaje?useUnicode=true&characterEncoding=utf-8";
+		this.user = "amstrong";
+		this.password = "!\"#$%wszae123QWERT";
 		connection = null;
 	}
 
