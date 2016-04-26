@@ -16,7 +16,10 @@ public class FormiDesktop {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        new MainFrame().setVisible(true);
+        MainFrame mf = new MainFrame();
+        if(args.length == 1)
+            mf.setHost(args[0]);
+        mf.setVisible(true);
     }
     
 }

@@ -76,12 +76,12 @@
              minus the .jar extension. It should not have spaces.
              <property name="store.jar.name" value="MyJarName"/>
         -->
-        <property name="store.jar.name" value="SCHEDULAR"/>
+        <property name="store.jar.name" value="Formi"/>
 
 
         <!-- don't edit below this line -->
 
-        <property name="store.dir" value="store"/>
+        <property name="store.dir" value="Fat"/>
         <property name="store.jar" value="${store.dir}/${store.jar.name}.jar"/>
 
         <echo message="Packaging ${application.title} into a single JAR at ${store.jar}"/>
@@ -92,6 +92,7 @@
         <jar destfile="${store.dir}/temp_final.jar" filesetmanifest="skip">
             <zipgroupfileset dir="dist" includes="*.jar"/>
             <zipgroupfileset dir="dist/lib" includes="*.jar"/>
+            <zipgroupfileset dir="fonts" includes="*.ttf"/>
 
             <manifest>
                 <attribute name="Main-Class" value="${main.class}"/>

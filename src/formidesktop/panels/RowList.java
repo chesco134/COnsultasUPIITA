@@ -5,6 +5,7 @@
  */
 package formidesktop.panels;
 
+import formidesktop.database.acciones.AccionesTablaAlumnoCursaMateria;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -14,38 +15,49 @@ import java.awt.event.MouseEvent;
  * @author jcapiz
  */
 public class RowList extends javax.swing.JPanel {
-    
+
     private String boleta;
-    
+
     /**
      * Creates new form RowList
+     *
      * @param boleta
      * @param materiaName
      * @param myFont
      * @param widthRef
      */
-    public RowList(String boleta, String materiaName,  Font myFont, int widthRef) {
+    public RowList(String boleta, String materiaName, Font myFont, int widthRef) {
         initComponents();
         this.boleta = boleta;
         jCheckBox2.setText(materiaName);
         jCheckBox2.setFont(myFont.deriveFont(14f));
-        jCheckBox1.addMouseListener(new MouseAdapter(){
-            
+        jCheckBox1.setEnabled(false);
+        jCheckBox1.addMouseListener(new MouseAdapter() {
+
             @Override
-            public void mouseClicked(MouseEvent evt){
-                System.out.println(jCheckBox1.isSelected() ? boleta + " dice que recursará " + jCheckBox2.getText() : boleta + " dice que ya no recursará " + jCheckBox2.getText());
+            public void mouseClicked(MouseEvent evt) {
+                AccionesTablaAlumnoCursaMateria.actualizaRecurse(boleta, materiaName, jCheckBox1.isSelected());
             }
         });
         jCheckBox2.addMouseListener(new MouseAdapter() {
-        
+
             @Override
-            public void mouseClicked(MouseEvent evt){
-                System.out.println("Are we enabled? " + jCheckBox2.isSelected());
+            public void mouseClicked(MouseEvent evt) {
+                if (jCheckBox2.isSelected()) {
+                    AccionesTablaAlumnoCursaMateria.insertaAlumnoCursaUnidadDeAprendizaje(boleta, materiaName, jCheckBox1.isSelected());
+                } else {
+                    AccionesTablaAlumnoCursaMateria.eliminaAlumnoCursaUnidadDeAprendizaje(boleta, materiaName);
+                    jCheckBox1.setSelected(false);
+                }
+                jCheckBox1.setEnabled(jCheckBox2.isSelected());
             }
         });
+        boolean cursaUA = AccionesTablaAlumnoCursaMateria.cursaUnidadAprendizaje(boleta, materiaName);
+        boolean esRecurse = AccionesTablaAlumnoCursaMateria.esRecurse(boleta, materiaName);
+        jCheckBox2.setSelected(cursaUA);
+        jCheckBox1.setEnabled(cursaUA);
+        jCheckBox1.setSelected(esRecurse);
     }
-    
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
