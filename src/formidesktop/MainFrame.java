@@ -20,6 +20,8 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.PreparedStatement;
@@ -41,6 +43,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import java.util.Timer;
 import java.util.TimerTask;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  *
@@ -55,15 +60,37 @@ public class MainFrame extends javax.swing.JFrame {
     private Timer t;
     private JLabel contadorLabel;
     private JPanel innerGridBotones;
-    private static boolean isFirstTime = true;
+    private List<JFrame> framesTrayectoria;
+    private boolean isFirstTime = true;
 
     public MainFrame() {
         if (isFirstTime) {
             setUndecorated(true);
             isFirstTime = false;
         }
+        LookAndFeelInfo[] lifis = UIManager.getInstalledLookAndFeels();
+        LookAndFeelInfo myChoose = null;
+        for (LookAndFeelInfo lifi : lifis) {
+            System.out.println("LookAndFeel: " + lifi.getName());
+            if (lifi.getName().equals("Nimbus")) {
+                myChoose = lifi;
+            }
+        }
+        try {
+            //UIManager.getSystemLookAndFeelClassName()
+            UIManager.setLookAndFeel(myChoose.getClassName());
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnsupportedLookAndFeelException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
         initComponents();
         postInitComponents();
+        framesTrayectoria = new ArrayList<>();
         //jPanel5.add(jlIcon2, BorderLayout.EAST);
         //jPanel6.add(instruccionesUpiita, BorderLayout.CENTER);
     }
@@ -184,29 +211,35 @@ public class MainFrame extends javax.swing.JFrame {
             headerContainer.add(encabezado, BorderLayout.CENTER);
             listPanel.add(headerContainer, BorderLayout.NORTH);
             listPanel.add(lContent, BorderLayout.WEST);
-            JButton aceptar = new JButton("Terminar");
+            JButton terminar = new JButton("Terminar");
             JButton verMapa = new JButton("Trayectoria recomendada");
-            aceptar.setFont(myFont.deriveFont(14f));
+            terminar.setFont(myFont.deriveFont(14f));
             verMapa.setFont(myFont.deriveFont(14f));
             JPanel panelDeBotonAceptar = new JPanel();
             panelDeBotonAceptar.setLayout(new GridLayout(1, 2));
             panelDeBotonAceptar.setBorder(BorderFactory.createEmptyBorder(15, 10, 10, 10));
-            aceptar.setSize(100, 30);
+            terminar.setSize(100, 30);
             verMapa.setSize(100, 30);
-            panelDeBotonAceptar.add(aceptar);
+            panelDeBotonAceptar.add(terminar);
             if (!AccionesTablaAlumnoCursaMateria.carrera(boleta).equals(AccionesTablaAlumnoCursaMateria.ISISA)) {
                 panelDeBotonAceptar.add(verMapa);
             }
             panelDeBotonAceptar.setBackground(java.awt.Color.white);
             JPanel parDeBotones = new JPanel(new BorderLayout(5, 0));
             parDeBotones.setBackground(Color.white);
-            innerGridBotones = new JPanel(new GridLayout(3, 1, 0, 2));
+            innerGridBotones = new JPanel(new GridLayout(3, 1, 0, 6));
             innerGridBotones.setBackground(Color.white);
             innerGridBotones.add(panelDeBotonAceptar);
-            JLabel nombreDelFulano = new JLabel("Holi " + AccionesTablaAlumnoCursaMateria.obtenerNombre(boleta) + " tienes:");
-            nombreDelFulano.setFont(myFont.deriveFont(14f));
+            JLabel nombreDelFulano = new JLabel(AccionesTablaAlumnoCursaMateria.obtenerNombre(boleta));
+            nombreDelFulano.setFont(myFont.deriveFont(14f).deriveFont(Font.BOLD));
             nombreDelFulano.setHorizontalAlignment(JLabel.CENTER);
-            innerGridBotones.add(nombreDelFulano);
+            JPanel flowNamePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
+            JLabel holaLabel = new JLabel("Hola");
+            holaLabel.setFont(myFont.deriveFont(14f));
+            flowNamePanel.add(holaLabel);
+            flowNamePanel.add(nombreDelFulano);
+            flowNamePanel.setBackground(Color.white);
+            innerGridBotones.add(flowNamePanel);
             contadorLabel = new JLabel();
             contadorLabel.setFont(myFont.deriveFont(14f).deriveFont(Font.BOLD));
             contadorLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -227,17 +260,32 @@ public class MainFrame extends javax.swing.JFrame {
             add(sPane, BorderLayout.CENTER);
             repaint();
             revalidate();
-            aceptar.addActionListener((ActionEvent evt) -> {
-                MainFrame.this.remove(sPane);
-                MainFrame.this.initComponents();
-                MainFrame.this.postInitComponents();
-                repaint();
-                revalidate();
-                JOptionPane.showMessageDialog(null, "¡Felicidades! :D");
+            terminar.addActionListener((ActionEvent evt) -> {
+                for (int i = framesTrayectoria.size() - 1; i >= 0; i--) {
+                    framesTrayectoria.get(i).dispose();
+                }
+                Cargando c = new Cargando(this);
+                c.bakeAzucarGlassPanel();
+                new java.util.Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        new Timer().schedule(new TimerTask(){ @Override public void run(){ dispose(); new MainFrame().setVisible(true); }}, 1500);
+                        //JOptionPane.showMessageDialog(MainFrame.this, "Gracias por participar");
+                    }
+                }, 2800);
             });
-            verMapa.addActionListener((ActionEvent e) -> {
-                Trayectoria mapa = new Trayectoria(AccionesTablaAlumnoCursaMateria.carrera(boleta));
-                mapa.iniciar();
+            verMapa.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseReleased(MouseEvent evt) {
+                    new java.util.Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            Trayectoria mapa = new Trayectoria(AccionesTablaAlumnoCursaMateria.carrera(boleta), framesTrayectoria);
+                            mapa.iniciar();
+                            framesTrayectoria.add(mapa);
+                        }
+                    }, 50);
+                }
             });
         } catch (SQLException e) {
             e.printStackTrace();
@@ -248,9 +296,9 @@ public class MainFrame extends javax.swing.JFrame {
         }
         loading.removeLoadingPanel();
         con.closeConnection();
-        javax.swing.Timer timer = new javax.swing.Timer(1000, new Contadorcito(15000));
-        timer.setRepeats(true);
-        timer.start();
+        //javax.swing.Timer timer = new javax.swing.Timer(1000, new Contadorcito(15000));
+        //timer.setRepeats(true);
+        //timer.start();
     }
 
     private class Contadorcito implements ActionListener {
@@ -317,7 +365,6 @@ public class MainFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Consulta de demanda de unidades de aprendizaje");
-        setPreferredSize(new java.awt.Dimension(780, 600));
         setResizable(false);
 
         jPanel3.setBackground(java.awt.Color.white);

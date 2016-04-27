@@ -56,7 +56,7 @@ public class Cargando {
             glass.setLayout(new GridBagLayout());
             icon = new javax.swing.JLabel();
             Random randi = new Random(new java.util.Date().getTime());
-            int rand = (int) (11 * randi.nextDouble());
+            int rand = (int) (10 * randi.nextDouble());
             System.out.println("El namber es> " + rand);
             switch (rand) {
                 case 0:

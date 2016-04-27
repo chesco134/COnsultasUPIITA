@@ -6,6 +6,12 @@
 package formidesktop;
 
 import formidesktop.database.acciones.AccionesTablaAlumnoCursaMateria;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.net.URL;
+import java.util.List;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
 /**
@@ -14,28 +20,46 @@ import javax.swing.JFrame;
  */
 public class Trayectoria extends javax.swing.JFrame {
 
+    
+    private List<JFrame> listaDeVentanasTrayectoria;
     /**
      * Creates new form Trayectoria
      * @param carrera
+     * @param listaDeVentanasTrayectoria
      */
-    public Trayectoria(String carrera) {
+    public Trayectoria(String carrera, List<JFrame> listaDeVentanasTrayectoria) {
+        this.listaDeVentanasTrayectoria = listaDeVentanasTrayectoria;
         initComponents();
-        setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
-        setAlwaysOnTop(true);
         jScrollPane1.getHorizontalScrollBar().setUnitIncrement(64);
         jScrollPane1.getVerticalScrollBar().setUnitIncrement(64);
-        System.out.println("Carrera: " + carrera);
+        URL url = null;
         switch(carrera){
             case AccionesTablaAlumnoCursaMateria.BIO:
-                carreraImg.setIcon(new javax.swing.ImageIcon(getClass().getResource("b.png")));
+                 url = getClass().getResource("b.png");
                 break;
             case AccionesTablaAlumnoCursaMateria.MEC:
-                carreraImg.setIcon(new javax.swing.ImageIcon(getClass().getResource("m.png")));
+                url = getClass().getResource("m.png");
                 break;
             case AccionesTablaAlumnoCursaMateria.TEL:
-                carreraImg.setIcon(new javax.swing.ImageIcon(getClass().getResource("t.png")));
+                url = getClass().getResource("t.png");
                 break;
         }
+        ImageIcon icon = new ImageIcon(url);
+        Image img = icon.getImage();
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        System.out.println("Icon width: " + icon.getIconWidth());
+        System.out.println("Screen width: " + screenSize.width);
+        System.out.println("Difference between Screens: " + (icon.getIconWidth() - screenSize.width));
+        icon.setImage(img.getScaledInstance(screenSize.width, -1, Image.SCALE_SMOOTH));
+        carreraImg.setIcon(icon);
+        setSize(screenSize);
+    }
+    
+    @Override
+    public void dispose(){
+        listaDeVentanasTrayectoria.remove(this);
+        System.out.println("tul (from dispose)");
+        super.dispose();
     }
 
     /**
