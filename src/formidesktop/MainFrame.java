@@ -71,7 +71,6 @@ public class MainFrame extends javax.swing.JFrame {
         LookAndFeelInfo[] lifis = UIManager.getInstalledLookAndFeels();
         LookAndFeelInfo myChoose = null;
         for (LookAndFeelInfo lifi : lifis) {
-            System.out.println("LookAndFeel: " + lifi.getName());
             if (lifi.getName().equals("Nimbus")) {
                 myChoose = lifi;
             }
@@ -212,7 +211,7 @@ public class MainFrame extends javax.swing.JFrame {
             listPanel.add(headerContainer, BorderLayout.NORTH);
             listPanel.add(lContent, BorderLayout.WEST);
             JButton terminar = new JButton("Terminar");
-            JButton verMapa = new JButton("Trayectoria recomendada");
+            JButton verMapa = new JButton("Ver materias");
             terminar.setFont(myFont.deriveFont(14f));
             verMapa.setFont(myFont.deriveFont(14f));
             JPanel panelDeBotonAceptar = new JPanel();

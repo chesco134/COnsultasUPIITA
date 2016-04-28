@@ -90,7 +90,7 @@ public class Cargando {
                     icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("gifs/9.gif")));
                     break;
                 default:
-                    icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("gifs/default.gif")));
+                    icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("gifs/10mo.gif")));
                     break;
             }
             icon.setText("Espere...");
