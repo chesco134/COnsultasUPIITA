@@ -151,7 +151,7 @@ public class AccionesTablaAlumnoCursaMateria {
         try{
             Connection con = db.getConnection();
             PreparedStatement pstmnt = con.prepareStatement("select nombre from "
-                    + "nombresalumno where boleta like ?");
+                    + "Nombres_Alumno where boleta like ? order by folio asc");
             pstmnt.setString(1, boleta);
             ResultSet rs = pstmnt.executeQuery();
             StringBuilder sb = new StringBuilder();
@@ -159,7 +159,7 @@ public class AccionesTablaAlumnoCursaMateria {
                 sb.append(rs.getString(1).concat(" "));
             String arr[] = sb.toString().trim().split(" ");
             sb.delete(0, sb.length());
-            for(int i=arr.length-1; i>=0; i--)
+            for(int i=0; i<arr.length; i++)
                 sb.append(arr[i].concat(" "));
             nombres = sb.toString().trim();
             con.close();

@@ -24,7 +24,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URL;
-import java.sql.PreparedStatement;
+import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -161,13 +161,12 @@ public class MainFrame extends javax.swing.JFrame {
             con = new DatabaseConnection();
         }
         try {
-            PreparedStatement pstmnt
+            CallableStatement pstmnt
                     = con.getConnection()
-                    .prepareStatement("select * from "
-                            + "Alumno join Programa_Academico_Unidad_Aprendizaje "
-                            + "using(idPrograma_Academico) where boleta like ?");
+                    .prepareCall("{call getMaterias(?)}");
             pstmnt.setString(1, boleta);
-            ResultSet rs = pstmnt.executeQuery();
+            pstmnt.executeUpdate();
+            ResultSet rs = pstmnt.getResultSet();
             List<String> materias = new ArrayList<>();
             while (rs.next()) {
                 materias.add(rs.getString("idUnidad_Aprendizaje"));
