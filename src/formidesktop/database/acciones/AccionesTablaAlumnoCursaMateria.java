@@ -5,12 +5,10 @@
  */
 package formidesktop.database.acciones;
 
-import formidesktop.database.DatabaseConnection;
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  *
@@ -22,151 +20,282 @@ public class AccionesTablaAlumnoCursaMateria {
     public static final String TEL = "INGENIERIA TELEMÁTICA";
     public static final String ISISA = "ISISA";
     
-    public static void actualizaRecurse(String boleta, String ua, boolean esRecurse){
-        DatabaseConnection db = new DatabaseConnection();
+    private static PrintWriter pw;
+    private static boolean bolResponse;
+    private static String strResponse;
+    private static String[] strArrResponse;
+    
+    static{
         try{
-            Connection con = db.getConnection();
-            CallableStatement cstmnt = con.prepareCall("{call actualizaRecurse(?,?,?)}");
-            cstmnt.setString(1, boleta);
-            cstmnt.setString(2, ua);
-            cstmnt.setBoolean(3, esRecurse);
-            cstmnt.executeUpdate();
-            con.close();
-        }catch(SQLException e){
+            pw = new PrintWriter(new FileWriter(new File("tac.log")));
+        }catch(IOException e){
             e.printStackTrace();
         }
+    }
+    
+    public static void actualizaRecurse(final String boleta, final String ua, final boolean esRecurse){
+        Parser request = new Parser();
+        request.addInt("action", 2);
+        request.addString("boleta", boleta);
+        request.addString("unidad_aprendizaje", ua);
+        request.addBoolean("es_recurse", esRecurse);
+        ServerConnection sc = new ServerConnection(request, new ServerConnection.AccionResultadoConexion() {
+            @Override
+            public void accionPositiva(Thread t) {
+                String message = "Recurse actualizado: " + boleta + ", " + ua + ", " + esRecurse;
+                System.out.println(message);
+                pw.println(message);
+            }
+
+            @Override
+            public void accionNegativa(Thread t) {
+                String message = ((ServerConnection) t).getStatusMessage();
+                if("".equals(message))
+                    message = "Bad action";
+                System.out.println(message);
+                pw.println(message);
+            }
+        });
+        sc.start();
     }
     
     public static void insertaAlumnoCursaUnidadDeAprendizaje(String boleta, String ua, boolean esRecurse){
-        DatabaseConnection db = new DatabaseConnection();
-        try{
-            try (Connection con = db.getConnection()) {
-                CallableStatement cstmnt =
-                        con.prepareCall("{call insertaAlumno_Cursa_Unidad_Aprendizaje(?,?,?)}");
-                cstmnt.setString(1, boleta);
-                cstmnt.setString(2, ua);
-                cstmnt.setBoolean(3, esRecurse);
-                cstmnt.executeUpdate();
+        Parser request = new Parser();
+        request.addInt("action", 1);
+        request.addString("boleta", boleta);
+        request.addString("unidad_aprendizaje", ua);
+        request.addBoolean("es_recurse", esRecurse);
+        ServerConnection sc = new ServerConnection(request, new ServerConnection.AccionResultadoConexion() {
+            @Override
+            public void accionPositiva(Thread t) {
+                String message = "Unidad de aprendizaje insertada: " + boleta + ", " + ua + ", " + esRecurse;
+                System.out.println(message);
+                pw.println(message);
             }
-        }catch(SQLException e){
-            e.printStackTrace();
-        }
+
+            @Override
+            public void accionNegativa(Thread t) {
+                String message = ((ServerConnection) t).getStatusMessage();
+                if("".equals(message))
+                    message = "Bad action";
+                System.out.println(message);
+                pw.println(message);
+            }
+        });
+        sc.start();
     }
     
     public static void eliminaAlumnoCursaUnidadDeAprendizaje(String boleta, String ua){
-        DatabaseConnection db = new DatabaseConnection();
-        try{
-            Connection con = db.getConnection();
-            CallableStatement cstmnt = 
-                    con.prepareCall("{call eliminaAlumno_Cursa_Unidad_Aprendizaje(?,?)}");
-            cstmnt.setString(1, boleta);
-            cstmnt.setString(2, ua);
-            cstmnt.executeUpdate();
-            con.close();
-        }catch(SQLException e){
-            e.printStackTrace();
-        }
+        Parser request = new Parser();
+        request.addInt("action", 3);
+        request.addString("boleta", boleta);
+        request.addString("unidad_aprendizaje", ua);
+        ServerConnection sc = new ServerConnection(request, new ServerConnection.AccionResultadoConexion() {
+            @Override
+            public void accionPositiva(Thread t) {
+                String message = "Unidad de aprendizaje eliminada: " + boleta + ", " + ua;
+                System.out.println(message);
+                pw.println(message);
+            }
+
+            @Override
+            public void accionNegativa(Thread t) {
+                String message = ((ServerConnection) t).getStatusMessage();
+                if("".equals(message))
+                    message = "Bad action";
+                System.out.println(message);
+                pw.println(message);
+            }
+        });
+        sc.start();
     }
     
     public static boolean esRecurse(String boleta, String ua){
-        boolean esRecurse = false;
-        DatabaseConnection db = new DatabaseConnection();
-        try{
-            Connection con = db.getConnection();
-            PreparedStatement pstmnt = con.prepareStatement("select isRecurse "
-                    + "from Alumno_Cursa_Unidad_Aprendizaje where boleta "
-                    + "like ? and idUnidad_Aprendizaje like ?");
-            pstmnt.setString(1, boleta);
-            pstmnt.setString(2, ua);
-            ResultSet rs = pstmnt.executeQuery();
-            while(rs.next()){
-                esRecurse = rs.getInt(1) != 0;
+        Parser request = new Parser();
+        request.addInt("action", 4);
+        request.addString("boleta", boleta);
+        request.addString("unidad_aprendizaje", ua);
+        ServerConnection sc = new ServerConnection(request, new ServerConnection.AccionResultadoConexion() {
+            @Override
+            public void accionPositiva(Thread t) {
+                Parser response = ((ServerConnection)t).getResponse();
+                bolResponse = response.getBoolean("es_recurse");
+                String message = "Solicitud de estado de recurse: " + boleta + ", " + ua + ", " + bolResponse;
+                System.out.println(message);
+                pw.println(message);
             }
-            db.closeConnection();
-        }catch(SQLException e){
-            e.printStackTrace();
-        }
-        return esRecurse;
+
+            @Override
+            public void accionNegativa(Thread t) {
+                bolResponse = false;
+                String message = ((ServerConnection) t).getStatusMessage();
+                if("".equals(message))
+                    message = "Bad action";
+                System.out.println(message);
+                pw.println(message);
+            }
+        });
+        sc.start();
+        try{
+            sc.join();
+        }catch(InterruptedException ignioe){}
+        return bolResponse;
     }
     
     public static boolean cursaUnidadAprendizaje(String boleta, String ua){
-        boolean cursaUA = false;
-        DatabaseConnection db = new DatabaseConnection();
+        Parser request = new Parser();
+        request.addInt("action", 5);
+        request.addString("boleta", boleta);
+        request.addString("unidad_aprendizaje", ua);
+        ServerConnection sc = new ServerConnection(request, new ServerConnection.AccionResultadoConexion() {
+            @Override
+            public void accionPositiva(Thread t) {
+                Parser response = ((ServerConnection)t).getResponse();
+                bolResponse = response.getBoolean("cursa_unidad_aprendizaje");
+                String message = "Solicitud de estado de curse de ua: " + boleta + ", " + ua + ", " + bolResponse;
+                System.out.println(message);
+                pw.println(message);
+            }
+
+            @Override
+            public void accionNegativa(Thread t) {
+                bolResponse = false;
+                String message = ((ServerConnection) t).getStatusMessage();
+                if("".equals(message))
+                    message = "Bad action";
+                System.out.println(message);
+                pw.println(message);
+            }
+        });
+        sc.start();
         try{
-            Connection con = db.getConnection();
-            PreparedStatement pstmnt = con.prepareStatement("select count(*) "
-                    + "from Alumno_Cursa_Unidad_Aprendizaje where boleta like "
-                    + "? and idUnidad_Aprendizaje like ?");
-            pstmnt.setString(1, boleta);
-            pstmnt.setString(2, ua);
-            ResultSet rs = pstmnt.executeQuery();
-            if(rs.next())
-                cursaUA = rs.getInt(1) != 0;
-            db.closeConnection();
-        }catch(SQLException e){
-            e.printStackTrace();
-        }
-        return cursaUA;
+            sc.join();
+        }catch(InterruptedException ignioe){}
+        return bolResponse;
     }
     
     public static boolean existeBoleta(String boleta){
-        boolean existeBoleta = false;
+        Parser request = new Parser();
+        request.addInt("action", 6);
+        request.addString("boleta", boleta);
+        ServerConnection sc = new ServerConnection(request, new ServerConnection.AccionResultadoConexion() {
+            @Override
+            public void accionPositiva(Thread t) {
+                Parser response = ((ServerConnection)t).getResponse();
+                bolResponse = response.getBoolean("existe_boleta");
+                String message = "Solicitud de existencia de boleta: " + boleta + ", " + bolResponse;
+                System.out.println(message);
+                pw.println(message);
+            }
+
+            @Override
+            public void accionNegativa(Thread t) {
+                bolResponse = false;
+                String message = ((ServerConnection) t).getStatusMessage();
+                if("".equals(message))
+                    message = "Bad action";
+                System.out.println(message);
+                pw.println(message);
+            }
+        });
+        sc.start();
         try{
-            DatabaseConnection db = new DatabaseConnection();
-            Connection con = db.getConnection();
-            PreparedStatement pstmnt = con.prepareStatement("select count(*)"
-                    + " from Alumno where boleta like ?");
-            pstmnt.setString(1, boleta);
-            ResultSet rs = pstmnt.executeQuery();
-            if(rs.next())
-                existeBoleta = rs.getInt(1) != 0;
-            db.closeConnection();
-        }catch(SQLException e){
-            e.printStackTrace();
-        }
-        return existeBoleta;
+            sc.join();
+        }catch(InterruptedException ignioe){}
+        return bolResponse;
     }
     
     public static String carrera (String boleta){
-        String carrera = null;
-        try{
-            DatabaseConnection db = new DatabaseConnection();
-            Connection con = db.getConnection();
-            PreparedStatement pstmt = con.prepareStatement("select idPrograma_Academico from Alumno where boleta like ?");
-            pstmt.setString(1, boleta);
-            ResultSet rs = pstmt.executeQuery();
-            if(rs.next()){
-                carrera = rs.getString(1);
+        Parser request = new Parser();
+        request.addInt("action", 7);
+        request.addString("boleta", boleta);
+        ServerConnection sc = new ServerConnection(request, new ServerConnection.AccionResultadoConexion() {
+            @Override
+            public void accionPositiva(Thread t) {
+                Parser response = ((ServerConnection)t).getResponse();
+                strResponse = response.getString("carrera");
+                String message = "Solicitud de carrera: " + boleta + ", " + strResponse;
+                System.out.println(message);
+                pw.println(message);
             }
-            db.closeConnection();
-        } catch(SQLException e){
-            e.printStackTrace();
-        }
-        return carrera;
+
+            @Override
+            public void accionNegativa(Thread t) {
+                strResponse = "";
+                String message = ((ServerConnection) t).getStatusMessage();
+                if("".equals(message))
+                    message = "Bad action";
+                System.out.println(message);
+                pw.println(message);
+            }
+        });
+        sc.start();
+        try{
+            sc.join();
+        }catch(InterruptedException ignioe){}
+        return strResponse;
     }
     
     public static String obtenerNombre(String boleta){
-        DatabaseConnection db = new DatabaseConnection();
-        String nombres = "Hola ISISO :3";
+        Parser request = new Parser();
+        request.addInt("action", 8);
+        request.addString("boleta", boleta);
+        ServerConnection sc = new ServerConnection(request, new ServerConnection.AccionResultadoConexion() {
+            @Override
+            public void accionPositiva(Thread t) {
+                Parser response = ((ServerConnection)t).getResponse();
+                strResponse = response.getString("nombre");
+                String message = "Solicitud de nombre: " + boleta + ", " + strResponse;
+                System.out.println(message);
+                pw.println(message);
+            }
+
+            @Override
+            public void accionNegativa(Thread t) {
+                strResponse = "";
+                String message = ((ServerConnection) t).getStatusMessage();
+                if("".equals(message))
+                    message = "Bad action";
+                System.out.println(message);
+                pw.println(message);
+            }
+        });
+        sc.start();
         try{
-            Connection con = db.getConnection();
-            PreparedStatement pstmnt = con.prepareStatement("select nombre from "
-                    + "Nombres_Alumno where boleta like ? order by folio asc");
-            pstmnt.setString(1, boleta);
-            ResultSet rs = pstmnt.executeQuery();
-            StringBuilder sb = new StringBuilder();
-            while(rs.next())
-                sb.append(rs.getString(1).concat(" "));
-            String arr[] = sb.toString().trim().split(" ");
-            sb.delete(0, sb.length());
-            for(int i=0; i<arr.length; i++)
-                sb.append(arr[i].concat(" "));
-            nombres = sb.toString().trim();
-            con.close();
-        }catch(SQLException e){
-            e.printStackTrace();
-        }
-        return nombres;
+            sc.join();
+        }catch(InterruptedException ignioe){}
+        return strResponse;
+    }
+    
+    public static String[] obtenerMaterias(String boleta){
+        Parser request = new Parser();
+        request.addInt("action", 9);
+        request.addString("boleta", boleta);
+        ServerConnection sc = new ServerConnection(request, new ServerConnection.AccionResultadoConexion() {
+            @Override
+            public void accionPositiva(Thread t) {
+                Parser response = ((ServerConnection)t).getResponse();
+                strArrResponse = response.getStringArray("materias");
+                String message = "Solicitud de materias: " + boleta;
+                System.out.println(message);
+                pw.println(message);
+            }
+
+            @Override
+            public void accionNegativa(Thread t) {
+                strResponse = "";
+                String message = ((ServerConnection) t).getStatusMessage();
+                if("".equals(message))
+                    message = "Bad action";
+                System.out.println(message);
+                pw.println(message);
+            }
+        });
+        sc.start();
+        try{
+            sc.join();
+        }catch(InterruptedException ignioe){}
+        return strArrResponse;
     }
     
 }

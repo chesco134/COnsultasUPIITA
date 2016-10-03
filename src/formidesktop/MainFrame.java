@@ -56,7 +56,7 @@ public class MainFrame extends javax.swing.JFrame {
     /**
      * Creates new form MainFrame
      */
-    private String host;
+    public static String HOST;
     private Timer t;
     private JLabel contadorLabel;
     private JPanel innerGridBotones;
@@ -95,7 +95,7 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     public void setHost(String host) {
-        this.host = host;
+        this.HOST = host;
     }
 
     private void setUpHeaderPanel() {
@@ -154,24 +154,9 @@ public class MainFrame extends javax.swing.JFrame {
         remove(jPanel4);
         remove(jPanel3);
         ListContent lContent = new ListContent();
-        DatabaseConnection con;
-        if (host != null) {
-            con = new DatabaseConnection(host);
-        } else {
-            con = new DatabaseConnection();
-        }
         try {
-            CallableStatement pstmnt
-                    = con.getConnection()
-                    .prepareCall("{call getMaterias(?)}");
-            pstmnt.setString(1, boleta);
-            pstmnt.executeUpdate();
-            ResultSet rs = pstmnt.getResultSet();
-            List<String> materias = new ArrayList<>();
-            while (rs.next()) {
-                materias.add(rs.getString("idUnidad_Aprendizaje"));
-            }
-            lContent.setLayout(new GridLayout(materias.size() + 1, 1));
+            String[] materias = AccionesTablaAlumnoCursaMateria.obtenerMaterias(boleta);
+            lContent.setLayout(new GridLayout(materias.length + 1, 1));
             Font myFont = Font.createFont(Font.TRUETYPE_FONT, RowList.class.getResourceAsStream("Roboto-Regular.ttf"));
             JLabel headingRecurseDeMateria = new JLabel("Pienso recursarla");
             headingRecurseDeMateria.setFont(myFont.deriveFont(14f).deriveFont(Font.BOLD));
@@ -183,10 +168,10 @@ public class MainFrame extends javax.swing.JFrame {
             headingPanel.setBorder(BorderFactory.createEmptyBorder(2, 0, 12, 0));
             headingPanel.setBackground(java.awt.Color.white);
             lContent.add(headingPanel);
-            materias.stream().forEach((cardName) -> {
-                RowList row = new RowList(boleta, cardName, myFont.deriveFont(14f), headingRecurseDeMateria.getWidth());
+            for(String materia : materias){
+                RowList row = new RowList(boleta, materia, myFont.deriveFont(14f), headingRecurseDeMateria.getWidth());
                 lContent.add(row);
-            });
+            }
             JPanel listPanel = new JPanel(new BorderLayout());
             listPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
             JLabel encabezado = new JLabel("Unidad Profesional Interdisciplinaria en "
@@ -285,15 +270,12 @@ public class MainFrame extends javax.swing.JFrame {
                     }, 50);
                 }
             });
-        } catch (SQLException e) {
-            e.printStackTrace();
         } catch (FontFormatException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
         loading.removeLoadingPanel();
-        con.closeConnection();
         //javax.swing.Timer timer = new javax.swing.Timer(1000, new Contadorcito(15000));
         //timer.setRepeats(true);
         //timer.start();
