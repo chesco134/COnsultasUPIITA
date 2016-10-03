@@ -5,7 +5,6 @@
  */
 package formidesktop;
 
-import formidesktop.database.DatabaseConnection;
 import formidesktop.database.acciones.AccionesTablaAlumnoCursaMateria;
 import formidesktop.panels.Cargando;
 import formidesktop.panels.ListContent;
@@ -24,9 +23,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URL;
-import java.sql.CallableStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -142,9 +138,7 @@ public class MainFrame extends javax.swing.JFrame {
         try {
             Font mFont = Font.createFont(Font.TRUETYPE_FONT, RowList.class.getResourceAsStream("Roboto-Black.ttf"));
             instruccionesUpiita.setFont(mFont.deriveFont(18f));
-        } catch (FontFormatException ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
+        } catch (FontFormatException | IOException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
         setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
@@ -168,8 +162,9 @@ public class MainFrame extends javax.swing.JFrame {
             headingPanel.setBorder(BorderFactory.createEmptyBorder(2, 0, 12, 0));
             headingPanel.setBackground(java.awt.Color.white);
             lContent.add(headingPanel);
+            String[] materiasMarcadas = AccionesTablaAlumnoCursaMateria.obtenerMateriasMarcadas(boleta);
             for(String materia : materias){
-                RowList row = new RowList(boleta, materia, myFont.deriveFont(14f), headingRecurseDeMateria.getWidth());
+                RowList row = new RowList(boleta, materia, myFont.deriveFont(14f), headingRecurseDeMateria.getWidth(), materiasMarcadas);
                 lContent.add(row);
             }
             JPanel listPanel = new JPanel(new BorderLayout());

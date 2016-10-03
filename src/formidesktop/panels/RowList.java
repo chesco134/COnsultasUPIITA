@@ -6,6 +6,7 @@
 package formidesktop.panels;
 
 import formidesktop.database.acciones.AccionesTablaAlumnoCursaMateria;
+import formidesktop.database.acciones.Parser;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -26,7 +27,7 @@ public class RowList extends javax.swing.JPanel {
      * @param myFont
      * @param widthRef
      */
-    public RowList(String boleta, String materiaName, Font myFont, int widthRef) {
+    public RowList(String boleta, String materiaName, Font myFont, int widthRef, String[] materiasMarcadas) {
         initComponents();
         this.boleta = boleta;
         jCheckBox2.setText(materiaName);
@@ -52,8 +53,19 @@ public class RowList extends javax.swing.JPanel {
                 jCheckBox1.setEnabled(jCheckBox2.isSelected());
             }
         });
-        boolean cursaUA = AccionesTablaAlumnoCursaMateria.cursaUnidadAprendizaje(boleta, materiaName);
-        boolean esRecurse = AccionesTablaAlumnoCursaMateria.esRecurse(boleta, materiaName);
+        boolean existe = false;
+        boolean isRecurse = false;
+        Parser row;
+        for(String materiaMarcada : materiasMarcadas){
+            row = new Parser(materiaMarcada);
+            if(materiaName.equals(row.getString("idUnidad_Aprendizaje"))){
+                existe = true;
+                isRecurse = row.getBoolean("es_recurse");
+                break;
+            }
+        }
+        boolean cursaUA = existe;
+        boolean esRecurse = isRecurse;
         jCheckBox2.setSelected(cursaUA);
         jCheckBox1.setEnabled(cursaUA);
         jCheckBox1.setSelected(esRecurse);

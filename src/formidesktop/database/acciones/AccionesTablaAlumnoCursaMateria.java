@@ -291,10 +291,35 @@ public class AccionesTablaAlumnoCursaMateria {
                 pw.println(message);
             }
         });
-        sc.start();
-        try{
-            sc.join();
-        }catch(InterruptedException ignioe){}
+        sc.run();
+        return strArrResponse;
+    }
+    
+    public static String[] obtenerMateriasMarcadas(String boleta){
+        Parser request = new Parser();
+        request.addInt("action", 10);
+        request.addString("boleta", boleta);
+        ServerConnection sc = new ServerConnection(request, new ServerConnection.AccionResultadoConexion() {
+            @Override
+            public void accionPositiva(Thread t) {
+                Parser response = ((ServerConnection)t).getResponse();
+                strArrResponse = response.getStringArray("materias");
+                String message = "Solicitud de materias: " + boleta;
+                System.out.println(message);
+                pw.println(message);
+            }
+
+            @Override
+            public void accionNegativa(Thread t) {
+                strResponse = "";
+                String message = ((ServerConnection) t).getStatusMessage();
+                if("".equals(message))
+                    message = "Bad action";
+                System.out.println(message);
+                pw.println(message);
+            }
+        });
+        sc.run();
         return strArrResponse;
     }
     
