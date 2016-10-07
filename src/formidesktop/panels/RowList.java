@@ -8,7 +8,10 @@ package formidesktop.panels;
 import formidesktop.Counter;
 import formidesktop.database.acciones.AccionesTablaAlumnoCursaMateria;
 import formidesktop.database.acciones.Parser;
+import static java.awt.Component.LEFT_ALIGNMENT;
 import java.awt.Font;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JFrame;
@@ -40,45 +43,36 @@ public class RowList extends javax.swing.JPanel {
         jCheckBox2.setText(materiaName);
         jCheckBox2.setFont(myFont.deriveFont(14f));
         jCheckBox1.setEnabled(false);
-        jCheckBox1.addMouseListener(new MouseAdapter() {
-
+        jCheckBox1.addItemListener(new ItemListener() {
             @Override
-            public void mouseClicked(MouseEvent evt) {
+            public void itemStateChanged(ItemEvent e) {
                 AccionesTablaAlumnoCursaMateria.actualizaRecurse(boleta, materiaName, jCheckBox1.isSelected());
             }
         });
-        jCheckBox2.addMouseListener(new MouseAdapter() {
-
+        jCheckBox2.addItemListener(new ItemListener(){
             @Override
-            public void mouseClicked(MouseEvent evt) {
+            public void itemStateChanged(ItemEvent e) {
+                
                 System.out.println("Cuenta: " + cuenta.obtenerCuenta());
                 if (jCheckBox2.isSelected()) {
+                    jCheckBox1.setEnabled(true);
                     AccionesTablaAlumnoCursaMateria.insertaAlumnoCursaUnidadDeAprendizaje(boleta, materiaName, jCheckBox1.isSelected());
                     System.out.println("selected");
                     if (cuenta.obtenerCuenta() > 11) {
                         String options[] = {"no c", "weno zi c pero no wa deisr"};
                         JOptionPane.showInputDialog(parent, "EWE K P2 apoco si vas a meter más de 11 materias el proximo semestre? NTPDV" +
                                 " RELAJA LA RAJA", "Warning", JOptionPane.QUESTION_MESSAGE, new javax.swing.ImageIcon(getClass().getResource("seasmamon.jpg")), options, LEFT_ALIGNMENT);
-                        /*JOptionPane.showInternalOptionDialog(
-                                null,
-                                "EWE K P2 apoco si vas a meter más de 11 materias el proximo semestre? NTPDV",
-                                "RELAJA LA RAJA",
-                                JOptionPane.YES_NO_OPTION,
-                                JOptionPane.QUESTION_MESSAGE,
-                                new javax.swing.ImageIcon(getClass().getResource("seasmamon.jpg")),
-                                options,
-                                options[0]);
-                        */
                     }
                     cuenta.incrementar();
                 } else {
+                    jCheckBox1.setEnabled(false);
                     AccionesTablaAlumnoCursaMateria.eliminaAlumnoCursaUnidadDeAprendizaje(boleta, materiaName);
                     cuenta.decrementar();
                     jCheckBox1.setSelected(false);
 
                 }
-                jCheckBox1.setEnabled(jCheckBox2.isSelected());
             }
+            
         });
         boolean existe = false;
         boolean isRecurse = false;

@@ -20,18 +20,9 @@ public class AccionesTablaAlumnoCursaMateria {
     public static final String TEL = "INGENIERIA TELEMÁTICA";
     public static final String ISISA = "ISISA";
     
-    private static PrintWriter pw;
     private static boolean bolResponse;
     private static String strResponse;
     private static String[] strArrResponse;
-    
-    static{
-        try{
-            pw = new PrintWriter(new FileWriter(new File("tac.log")));
-        }catch(IOException e){
-            e.printStackTrace();
-        }
-    }
     
     public static void actualizaRecurse(final String boleta, final String ua, final boolean esRecurse){
         Parser request = new Parser();
@@ -44,7 +35,7 @@ public class AccionesTablaAlumnoCursaMateria {
             public void accionPositiva(Thread t) {
                 String message = "Recurse actualizado: " + boleta + ", " + ua + ", " + esRecurse;
                 System.out.println(message);
-                pw.println(message);
+                //pw.println(message);
             }
 
             @Override
@@ -53,10 +44,10 @@ public class AccionesTablaAlumnoCursaMateria {
                 if("".equals(message))
                     message = "Bad action";
                 System.out.println(message);
-                pw.println(message);
+                //pw.println(message);
             }
         });
-        sc.start();
+        sc.run();
     }
     
     public static void insertaAlumnoCursaUnidadDeAprendizaje(String boleta, String ua, boolean esRecurse){
@@ -70,7 +61,7 @@ public class AccionesTablaAlumnoCursaMateria {
             public void accionPositiva(Thread t) {
                 String message = "Unidad de aprendizaje insertada: " + boleta + ", " + ua + ", " + esRecurse;
                 System.out.println(message);
-                pw.println(message);
+                //pw.println(message);
             }
 
             @Override
@@ -79,10 +70,10 @@ public class AccionesTablaAlumnoCursaMateria {
                 if("".equals(message))
                     message = "Bad action";
                 System.out.println(message);
-                pw.println(message);
+                //pw.println(message);
             }
         });
-        sc.start();
+        sc.run();
     }
     
     public static void eliminaAlumnoCursaUnidadDeAprendizaje(String boleta, String ua){
@@ -95,7 +86,7 @@ public class AccionesTablaAlumnoCursaMateria {
             public void accionPositiva(Thread t) {
                 String message = "Unidad de aprendizaje eliminada: " + boleta + ", " + ua;
                 System.out.println(message);
-                pw.println(message);
+                //pw.println(message);
             }
 
             @Override
@@ -104,10 +95,10 @@ public class AccionesTablaAlumnoCursaMateria {
                 if("".equals(message))
                     message = "Bad action";
                 System.out.println(message);
-                pw.println(message);
+                //pw.println(message);
             }
         });
-        sc.start();
+        sc.run();
     }
     
     public static boolean esRecurse(String boleta, String ua){
@@ -122,7 +113,7 @@ public class AccionesTablaAlumnoCursaMateria {
                 bolResponse = response.getBoolean("es_recurse");
                 String message = "Solicitud de estado de recurse: " + boleta + ", " + ua + ", " + bolResponse;
                 System.out.println(message);
-                pw.println(message);
+                //pw.println(message);
             }
 
             @Override
@@ -132,10 +123,10 @@ public class AccionesTablaAlumnoCursaMateria {
                 if("".equals(message))
                     message = "Bad action";
                 System.out.println(message);
-                pw.println(message);
+                //pw.println(message);
             }
         });
-        sc.start();
+        sc.run();
         try{
             sc.join();
         }catch(InterruptedException ignioe){}
@@ -154,7 +145,7 @@ public class AccionesTablaAlumnoCursaMateria {
                 bolResponse = response.getBoolean("cursa_unidad_aprendizaje");
                 String message = "Solicitud de estado de curse de ua: " + boleta + ", " + ua + ", " + bolResponse;
                 System.out.println(message);
-                pw.println(message);
+                //pw.println(message);
             }
 
             @Override
@@ -164,13 +155,10 @@ public class AccionesTablaAlumnoCursaMateria {
                 if("".equals(message))
                     message = "Bad action";
                 System.out.println(message);
-                pw.println(message);
+                //pw.println(message);
             }
         });
-        sc.start();
-        try{
-            sc.join();
-        }catch(InterruptedException ignioe){}
+        sc.run();
         return bolResponse;
     }
     
@@ -185,7 +173,7 @@ public class AccionesTablaAlumnoCursaMateria {
                 bolResponse = response.getBoolean("existe_boleta");
                 String message = "Solicitud de existencia de boleta: " + boleta + ", " + bolResponse;
                 System.out.println(message);
-                pw.println(message);
+                //pw.println(message);
             }
 
             @Override
@@ -195,13 +183,10 @@ public class AccionesTablaAlumnoCursaMateria {
                 if("".equals(message))
                     message = "Bad action";
                 System.out.println(message);
-                pw.println(message);
+                //pw.println(message);
             }
         });
-        sc.start();
-        try{
-            sc.join();
-        }catch(InterruptedException ignioe){}
+        sc.run();
         return bolResponse;
     }
     
@@ -216,7 +201,7 @@ public class AccionesTablaAlumnoCursaMateria {
                 strResponse = response.getString("carrera");
                 String message = "Solicitud de carrera: " + boleta + ", " + strResponse;
                 System.out.println(message);
-                pw.println(message);
+                //pw.println(message);
             }
 
             @Override
@@ -226,13 +211,10 @@ public class AccionesTablaAlumnoCursaMateria {
                 if("".equals(message))
                     message = "Bad action";
                 System.out.println(message);
-                pw.println(message);
+                //pw.println(message);
             }
         });
-        sc.start();
-        try{
-            sc.join();
-        }catch(InterruptedException ignioe){}
+        sc.run();
         return strResponse;
     }
     
@@ -247,7 +229,7 @@ public class AccionesTablaAlumnoCursaMateria {
                 strResponse = response.getString("nombre");
                 String message = "Solicitud de nombre: " + boleta + ", " + strResponse;
                 System.out.println(message);
-                pw.println(message);
+                //pw.println(message);
             }
 
             @Override
@@ -257,13 +239,10 @@ public class AccionesTablaAlumnoCursaMateria {
                 if("".equals(message))
                     message = "Bad action";
                 System.out.println(message);
-                pw.println(message);
+                //pw.println(message);
             }
         });
-        sc.start();
-        try{
-            sc.join();
-        }catch(InterruptedException ignioe){}
+        sc.run();
         return strResponse;
     }
     
@@ -278,7 +257,7 @@ public class AccionesTablaAlumnoCursaMateria {
                 strArrResponse = response.getStringArray("materias");
                 String message = "Solicitud de materias: " + boleta;
                 System.out.println(message);
-                pw.println(message);
+                //pw.println(message);
             }
 
             @Override
@@ -288,7 +267,7 @@ public class AccionesTablaAlumnoCursaMateria {
                 if("".equals(message))
                     message = "Bad action";
                 System.out.println(message);
-                pw.println(message);
+                //pw.println(message);
             }
         });
         sc.run();
@@ -306,7 +285,7 @@ public class AccionesTablaAlumnoCursaMateria {
                 strArrResponse = response.getStringArray("materias");
                 String message = "Solicitud de materias: " + boleta;
                 System.out.println(message);
-                pw.println(message);
+                //pw.println(message);
             }
 
             @Override
@@ -316,7 +295,7 @@ public class AccionesTablaAlumnoCursaMateria {
                 if("".equals(message))
                     message = "Bad action";
                 System.out.println(message);
-                pw.println(message);
+                //pw.println(message);
             }
         });
         sc.run();

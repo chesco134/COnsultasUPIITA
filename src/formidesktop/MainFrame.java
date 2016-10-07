@@ -61,12 +61,13 @@ public class MainFrame extends javax.swing.JFrame {
     private JPanel innerGridBotones;
     private List<JFrame> framesTrayectoria;
     private boolean isFirstTime = true;
-    private static final Counter cuenta = new Counter();
+    private Counter cuenta;
 
     public MainFrame() {
         if (isFirstTime) {
             setUndecorated(true);
             isFirstTime = false;
+            cuenta = new Counter();
         }
         LookAndFeelInfo[] lifis = UIManager.getInstalledLookAndFeels();
         LookAndFeelInfo myChoose = null;
@@ -154,7 +155,6 @@ public class MainFrame extends javax.swing.JFrame {
         ListContent lContent = new ListContent();
         try {
             String[] materias = AccionesTablaAlumnoCursaMateria.obtenerMaterias(boleta);
-            cuenta.setCuenta(materias.length);
             lContent.setLayout(new GridLayout(materias.length + 1, 1));
             Font myFont = Font.createFont(Font.TRUETYPE_FONT, RowList.class.getResourceAsStream("Roboto-Regular.ttf"));
             JLabel headingRecurseDeMateria = new JLabel("Pienso recursarla");
@@ -168,11 +168,12 @@ public class MainFrame extends javax.swing.JFrame {
             headingPanel.setBackground(java.awt.Color.white);
             lContent.add(headingPanel);
             String[] materiasMarcadas = AccionesTablaAlumnoCursaMateria.obtenerMateriasMarcadas(boleta);
+            cuenta.setCuenta(materiasMarcadas.length);
             for (String materia : materias) {
                 RowList row = new RowList(boleta, materia, myFont.deriveFont(14f), headingRecurseDeMateria.getWidth(), materiasMarcadas, cuenta, this);
                 lContent.add(row);
             }
-
+            System.out.println("Cuenta actual: " + cuenta.obtenerCuenta());
             JPanel listPanel = new JPanel(new BorderLayout());
             listPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
             JLabel encabezado = new JLabel("Unidad Profesional Interdisciplinaria en "
