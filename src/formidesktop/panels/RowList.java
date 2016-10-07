@@ -5,11 +5,15 @@
  */
 package formidesktop.panels;
 
+import formidesktop.Counter;
+import formidesktop.MainFrame;
+import static formidesktop.MainFrame.counter;
 import formidesktop.database.acciones.AccionesTablaAlumnoCursaMateria;
 import formidesktop.database.acciones.Parser;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -18,6 +22,7 @@ import java.awt.event.MouseEvent;
 public class RowList extends javax.swing.JPanel {
 
     private String boleta;
+    private Counter cuenta;
 
     /**
      * Creates new form RowList
@@ -26,9 +31,12 @@ public class RowList extends javax.swing.JPanel {
      * @param materiaName
      * @param myFont
      * @param widthRef
+     * @param materiasMarcadas
+     * @param counter
      */
-    public RowList(String boleta, String materiaName, Font myFont, int widthRef, String[] materiasMarcadas) {
+    public RowList(String boleta, String materiaName, Font myFont, int widthRef, String[] materiasMarcadas, Counter cuenta) {
         initComponents();
+        this.cuenta = cuenta;
         this.boleta = boleta;
         jCheckBox2.setText(materiaName);
         jCheckBox2.setFont(myFont.deriveFont(14f));
@@ -46,9 +54,25 @@ public class RowList extends javax.swing.JPanel {
             public void mouseClicked(MouseEvent evt) {
                 if (jCheckBox2.isSelected()) {
                     AccionesTablaAlumnoCursaMateria.insertaAlumnoCursaUnidadDeAprendizaje(boleta, materiaName, jCheckBox1.isSelected());
+                    System.out.println("selected");
+                    if (counter > 11) {
+                        String options[] = {"no c", "weno zi c pero no wa deisr"};
+                        JOptionPane.showInternalOptionDialog(
+                                null,
+                                "EWE K P2 apoco si vas a meter 12 materias el proximo semestre? NTPDV",
+                                "RELAJA LA RAJA",
+                                JOptionPane.YES_NO_OPTION,
+                                JOptionPane.QUESTION_MESSAGE,
+                                new javax.swing.ImageIcon(getClass().getResource("seasmamon.jpg")),
+                                options,
+                                options[0]);
+                    }
+                    cuenta.incrementar();
                 } else {
                     AccionesTablaAlumnoCursaMateria.eliminaAlumnoCursaUnidadDeAprendizaje(boleta, materiaName);
+                    cuenta.decrementar();
                     jCheckBox1.setSelected(false);
+
                 }
                 jCheckBox1.setEnabled(jCheckBox2.isSelected());
             }
@@ -56,9 +80,9 @@ public class RowList extends javax.swing.JPanel {
         boolean existe = false;
         boolean isRecurse = false;
         Parser row;
-        for(String materiaMarcada : materiasMarcadas){
+        for (String materiaMarcada : materiasMarcadas) {
             row = new Parser(materiaMarcada);
-            if(materiaName.equals(row.getString("idUnidad_Aprendizaje"))){
+            if (materiaName.equals(row.getString("idUnidad_Aprendizaje"))) {
                 existe = true;
                 isRecurse = row.getBoolean("es_recurse");
                 break;
@@ -109,4 +133,5 @@ public class RowList extends javax.swing.JPanel {
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JCheckBox jCheckBox2;
     // End of variables declaration//GEN-END:variables
+
 }

@@ -11,6 +11,8 @@ import formidesktop.panels.ListContent;
 import formidesktop.panels.RowList;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -21,7 +23,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -58,12 +63,14 @@ public class MainFrame extends javax.swing.JFrame {
     private JPanel innerGridBotones;
     private List<JFrame> framesTrayectoria;
     private boolean isFirstTime = true;
+    private Counter cuenta;
 
     public MainFrame() {
         if (isFirstTime) {
             setUndecorated(true);
             isFirstTime = false;
         }
+        cuenta = new Counter();
         LookAndFeelInfo[] lifis = UIManager.getInstalledLookAndFeels();
         LookAndFeelInfo myChoose = null;
         for (LookAndFeelInfo lifi : lifis) {
@@ -163,10 +170,11 @@ public class MainFrame extends javax.swing.JFrame {
             headingPanel.setBackground(java.awt.Color.white);
             lContent.add(headingPanel);
             String[] materiasMarcadas = AccionesTablaAlumnoCursaMateria.obtenerMateriasMarcadas(boleta);
-            for(String materia : materias){
-                RowList row = new RowList(boleta, materia, myFont.deriveFont(14f), headingRecurseDeMateria.getWidth(), materiasMarcadas);
+            for (String materia : materias) {
+                RowList row = new RowList(boleta, materia, myFont.deriveFont(14f), headingRecurseDeMateria.getWidth(), materiasMarcadas, cuenta);
                 lContent.add(row);
             }
+
             JPanel listPanel = new JPanel(new BorderLayout());
             listPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
             JLabel encabezado = new JLabel("Unidad Profesional Interdisciplinaria en "
@@ -247,7 +255,13 @@ public class MainFrame extends javax.swing.JFrame {
                 new java.util.Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        new Timer().schedule(new TimerTask(){ @Override public void run(){ dispose(); new MainFrame().setVisible(true); }}, 1500);
+                        new Timer().schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                dispose();
+                                new MainFrame().setVisible(true);
+                            }
+                        }, 1500);
                         //JOptionPane.showMessageDialog(MainFrame.this, "Gracias por participar");
                     }
                 }, 2800);
@@ -258,9 +272,16 @@ public class MainFrame extends javax.swing.JFrame {
                     new java.util.Timer().schedule(new TimerTask() {
                         @Override
                         public void run() {
-                            Trayectoria mapa = new Trayectoria(AccionesTablaAlumnoCursaMateria.carrera(boleta), framesTrayectoria);
-                            mapa.iniciar();
-                            framesTrayectoria.add(mapa);
+//                            Trayectoria mapa = new Trayectoria(AccionesTablaAlumnoCursaMateria.carrera(boleta), framesTrayectoria);
+//                            mapa.iniciar();
+//                            framesTrayectoria.add(mapa);
+                            try {
+                                Desktop.getDesktop().browse(new URI("http://www.trayectorias.16mb.com/"));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            } catch (URISyntaxException ex) {
+                                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+                            }
                         }
                     }, 50);
                 }
@@ -435,6 +456,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
     Cargando loading = new Cargando(this);
+    public static int counter = 0;
 
     private void botonClicked(String boleta) {
         TryingBoleta t = new TryingBoleta();
