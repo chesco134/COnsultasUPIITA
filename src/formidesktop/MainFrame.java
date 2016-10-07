@@ -11,7 +11,6 @@ import formidesktop.panels.ListContent;
 import formidesktop.panels.RowList;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -23,7 +22,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -63,14 +61,13 @@ public class MainFrame extends javax.swing.JFrame {
     private JPanel innerGridBotones;
     private List<JFrame> framesTrayectoria;
     private boolean isFirstTime = true;
-    private Counter cuenta;
+    private static final Counter cuenta = new Counter();
 
     public MainFrame() {
         if (isFirstTime) {
             setUndecorated(true);
             isFirstTime = false;
         }
-        cuenta = new Counter();
         LookAndFeelInfo[] lifis = UIManager.getInstalledLookAndFeels();
         LookAndFeelInfo myChoose = null;
         for (LookAndFeelInfo lifi : lifis) {
@@ -157,6 +154,7 @@ public class MainFrame extends javax.swing.JFrame {
         ListContent lContent = new ListContent();
         try {
             String[] materias = AccionesTablaAlumnoCursaMateria.obtenerMaterias(boleta);
+            cuenta.setCuenta(materias.length);
             lContent.setLayout(new GridLayout(materias.length + 1, 1));
             Font myFont = Font.createFont(Font.TRUETYPE_FONT, RowList.class.getResourceAsStream("Roboto-Regular.ttf"));
             JLabel headingRecurseDeMateria = new JLabel("Pienso recursarla");
@@ -171,7 +169,7 @@ public class MainFrame extends javax.swing.JFrame {
             lContent.add(headingPanel);
             String[] materiasMarcadas = AccionesTablaAlumnoCursaMateria.obtenerMateriasMarcadas(boleta);
             for (String materia : materias) {
-                RowList row = new RowList(boleta, materia, myFont.deriveFont(14f), headingRecurseDeMateria.getWidth(), materiasMarcadas, cuenta);
+                RowList row = new RowList(boleta, materia, myFont.deriveFont(14f), headingRecurseDeMateria.getWidth(), materiasMarcadas, cuenta, this);
                 lContent.add(row);
             }
 

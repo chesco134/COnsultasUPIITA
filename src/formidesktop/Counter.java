@@ -28,4 +28,8 @@ public class Counter {
     public int obtenerCuenta(){
         return contador;
     }
+    
+    public void setCuenta(int contador){
+        this.contador = contador;
+    }
 }
